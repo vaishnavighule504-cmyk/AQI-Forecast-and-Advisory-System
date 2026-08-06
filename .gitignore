@@ -1,0 +1,10 @@
+# Ignore raw csv files and checkpoints
+*.csv
+!data/daily_aqi_processed.csv
+
+# Python environments and cache
+__pycache__/
+.ipynb_checkpoints/
+*.venv
+venv/
+.env
