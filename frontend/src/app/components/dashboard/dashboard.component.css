@@ -1,0 +1,803 @@
+/* Clinical Medical Vibe - Sage Green and Crisp White (NO BLUE COLOR) */
+:host {
+  display: block;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  color: #334155;
+}
+
+.dashboard-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* Header Styling */
+.app-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1.5rem;
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.clinical-icon {
+  font-size: 2.2rem;
+}
+
+.app-header h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 1.05rem;
+  max-width: 650px;
+  margin: 0.5rem auto 0;
+  line-height: 1.5;
+}
+
+/* Responsive Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Card Structures */
+.card-shadow {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e2e8f0;
+  padding: 1.75rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.header-icon {
+  font-size: 1.35rem;
+}
+
+.card-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.section-intro {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Map Containers */
+.map-container-outer {
+  width: 100%;
+  height: 460px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  position: relative;
+  z-index: 10;
+}
+
+#aqi-leaflet-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Custom pulsing map marker classes */
+.clinical-marker-element {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clinical-pulse-dot {
+  width: 12px;
+  height: 12px;
+  background-color: #10b981; /* clinical emerald green */
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.clinical-pulse-dot::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 2px solid #10b981;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+/* Active animated indicator on the map */
+.active-pulse {
+  background-color: #059669;
+  transform: scale(1.3);
+  box-shadow: 0 0 12px rgba(5, 150, 105, 0.9);
+}
+
+.active-pulse::after {
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(2.0); opacity: 0; }
+}
+
+/* Map Legend */
+.map-legend {
+  margin-top: 1.25rem;
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.legend-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.color-dot.good { background-color: #10b981; }
+.color-dot.satisfactory { background-color: #84cc16; }
+.color-dot.moderate { background-color: #eab308; }
+.color-dot.poor { background-color: #f97316; }
+.color-dot.very-poor { background-color: #ef4444; }
+.color-dot.severe { background-color: #7f1d1d; }
+
+/* Control Panel Section */
+.controls-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-group label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  width: 100%;
+  padding: 0.85rem 2.5rem 0.85rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  color: #1e293b;
+  appearance: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Spinner and Loader */
+.loader-enclosure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3.5px solid #f1f5f9;
+  border-top: 3.5px solid #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader-enclosure p {
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
+  animation: heartbeat 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes heartbeat {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Error Enclosure */
+.error-enclosure {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.warn-symbol {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.error-details h4 {
+  margin: 0 0 0.25rem 0;
+  color: #991b1b;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.error-details p {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Results Content */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.city-summary-banner {
+  background-color: #f0fdf4;
+  border-left: 4px solid #10b981;
+  border-radius: 0 10px 10px 0;
+  padding: 1rem;
+}
+
+.banner-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.city-summary-banner h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+}
+
+.current-state-badge {
+  font-size: 0.8rem;
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+/* Forecast cards */
+.forecast-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.forecast-result-card {
+  border-radius: 14px;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease;
+}
+
+.forecast-result-card:hover {
+  transform: translateY(-2px);
+}
+
+.date-tag {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.horizon-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  margin: 0.35rem 0 1rem;
+}
+
+.aqi-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.aqi-num {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.aqi-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.cat-pill {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.transparency-tag {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  border-top: 1px solid #f1f5f9;
+  width: 100%;
+  padding-top: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Category-specific card boundary stylings */
+.aqi-good { border-top: 5px solid #10b981; }
+.aqi-good .aqi-num { color: #10b981; }
+.aqi-good .cat-pill { background-color: #10b981; }
+
+.aqi-satisfactory { border-top: 5px solid #84cc16; }
+.aqi-satisfactory .aqi-num { color: #84cc16; }
+.aqi-satisfactory .cat-pill { background-color: #84cc16; }
+
+.aqi-moderate { border-top: 5px solid #eab308; }
+.aqi-moderate .aqi-num { color: #eab308; }
+.aqi-moderate .cat-pill { background-color: #eab308; }
+
+.aqi-poor { border-top: 5px solid #f97316; }
+.aqi-poor .aqi-num { color: #f97316; }
+.aqi-poor .cat-pill { background-color: #f97316; }
+
+.aqi-very-poor { border-top: 5px solid #ef4444; }
+.aqi-very-poor .aqi-num { color: #ef4444; }
+.aqi-very-poor .cat-pill { background-color: #ef4444; }
+
+.aqi-severe { border-top: 5px solid #7f1d1d; }
+.aqi-severe .aqi-num { color: #7f1d1d; }
+.aqi-severe .cat-pill { background-color: #7f1d1d; }
+
+
+/* Prescription Advisory Card */
+.prescription-form-card {
+  background-color: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  position: relative;
+  padding: 1.75rem;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.03);
+}
+
+.prescription-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background-color: #10b981; /* clinical green header line */
+  border-radius: 16px 16px 0 0;
+}
+
+.rx-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.rx-symbol {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #10b981; /* clinical green Rx icon */
+  font-style: italic;
+  font-family: Georgia, serif;
+  line-height: 0.8;
+}
+
+.rx-doctor-info h5 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.15rem 0;
+}
+
+.rx-doctor-info p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rx-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.prescription-section h6 {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.border-top-dashed {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 1.25rem;
+}
+
+.bullet-list-rx {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.bullet-list-rx li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #334155;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.bullet-list-rx li:last-child {
+  margin-bottom: 0;
+}
+
+.bullet-list-rx li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: #10b981; /* Clinical green star bullet */
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.rx-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.75rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.verify-seal {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #059669; /* Solid green seal token */
+  font-weight: 700;
+}
+
+.rx-date {
+  color: #64748b;
+}
+
+/* Responsive configurations */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-form {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .forecast-cards-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* --- CPCB Live Telemetry & Station Observation Styles --- */
+
+.telemetry-status-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background-color: #ffffff;
+  border-width: 1px;
+  border-style: solid;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+.telemetry-status-badge.status-connected {
+  border-color: #a7f3d0;
+  background-color: #f0fdf4;
+}
+
+.telemetry-status-badge.status-fallback {
+  border-color: #fecaca;
+  background-color: #fff5f5;
+}
+
+.status-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.status-connected .status-indicator-dot {
+  background-color: #10b981;
+}
+
+.status-connected .status-indicator-dot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #10b981;
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.status-fallback .status-indicator-dot {
+  background-color: #ef4444;
+}
+
+.telemetry-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.telemetry-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.telemetry-meta {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.methodology-disclaimer {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.station-drawer-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.station-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.drawer-icon {
+  font-size: 1.2rem;
+}
+
+.station-drawer-header h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.station-drawer-help {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.station-list-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.25rem;
+}
+
+/* Custom scrollbar for station list */
+.station-list-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.station-list-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.station-list-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.station-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.station-name-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.station-aqi-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  text-align: right;
+  min-width: 60px;
+}
+

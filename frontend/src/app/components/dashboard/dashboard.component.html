@@ -1,0 +1,214 @@
+<div class="dashboard-wrapper">
+  <header class="app-header">
+    <div class="header-logo-container">
+      <span class="clinical-icon">🩺</span>
+      <h1>Physician-Guided AQI Forecast System</h1>
+    </div>
+    <p class="subtitle">Real-time CPCB sub-index tracking, machine learning predictions, and clinical health advisories</p>
+  </header>
+
+  <div class="dashboard-grid">
+    <!-- Left Column: Interactive Map of India -->
+    <div class="map-card card-shadow">
+      <div class="card-header">
+        <span class="header-icon">🗺️</span>
+        <h3>Pilot City Geographic Analysis</h3>
+      </div>
+      <p class="section-intro">Click on a monitoring station token to select the city and fetch forecasts.</p>
+      
+      <div class="map-container-outer">
+        <div id="aqi-leaflet-map"></div>
+      </div>
+      
+      <div class="map-legend">
+        <div class="legend-title">AQI Categories:</div>
+        <div class="legend-items">
+          <span class="legend-item"><span class="color-dot good"></span> Good</span>
+          <span class="legend-item"><span class="color-dot satisfactory"></span> Satisfactory</span>
+          <span class="legend-item"><span class="color-dot moderate"></span> Moderate</span>
+          <span class="legend-item"><span class="color-dot poor"></span> Poor</span>
+          <span class="legend-item"><span class="color-dot very-poor"></span> Very Poor</span>
+          <span class="legend-item"><span class="color-dot severe"></span> Severe</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Control Panel & Forecasting Cards & Clinical Prescription -->
+    <div class="panel-card card-shadow">
+      <div class="card-header">
+        <span class="header-icon">⚙️</span>
+        <h3>Health & Forecast Control Panel</h3>
+      </div>
+
+      <!-- Controls Form -->
+      <div class="controls-form">
+        <div class="control-group">
+          <label for="city-select">Active Monitoring City</label>
+          <div class="select-wrapper">
+            <select id="city-select" [ngModel]="selectedCity()" (ngModelChange)="onCityChange($event)">
+              @for (city of cities; track city) {
+                <option [value]="city">{{ city }}</option>
+              }
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="profile-select">Patient Vulnerability Profile</label>
+          <div class="select-wrapper">
+            <select id="profile-select" [ngModel]="selectedProfile()" (ngModelChange)="onProfileChange($event)">
+              @for (profile of profiles; track profile) {
+                <option [value]="profile">{{ profile }}</option>
+              }
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loader Section -->
+      @if (isLoading()) {
+        <div class="loader-enclosure">
+          <div class="spinner"></div>
+          <p>Scraping active pollutants database and compiling advisory...</p>
+        </div>
+      }
+
+      <!-- Error Section -->
+      @if (errorMessage()) {
+        <div class="error-enclosure">
+          <span class="warn-symbol">⚠️</span>
+          <div class="error-details">
+            <h4>System Interruption</h4>
+            <p>{{ errorMessage() }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Forecast and Advisory Displays -->
+      @if (!isLoading() && forecastData(); as data) {
+        <div class="results-container animate-slide-up">
+          
+          <div class="city-summary-banner">
+            <div class="banner-title-row">
+              <h4>{{ data.city }} Forecast Summary</h4>
+              <span class="current-state-badge">Latest Date: {{ data.latest_reading_date }} (AQI: {{ data.latest_reading_aqi }})</span>
+            </div>
+          </div>
+
+          <!-- Telemetry Status Badge -->
+          @if (liveAqiData(); as liveData) {
+            <div class="telemetry-status-badge" [ngClass]="liveData.live ? 'status-connected' : 'status-fallback'">
+              <div class="status-indicator-dot"></div>
+              <div class="telemetry-info-text">
+                <span class="telemetry-title">Live Telemetry: {{ liveData.live ? 'Connected' : 'Offline (PostgreSQL Fallback)' }}</span>
+                <span class="telemetry-meta">
+                  <b>Methodology:</b> {{ liveData.derived_method }} |
+                  <b>Timestamp:</b> {{ liveData.date }}
+                </span>
+                <span class="methodology-disclaimer">
+                  <i>Disclaimer:</i> The daily city AQI shown is our project-derived average calculated from station-wise concentration averages using CPCB break-point formulas. Click Map Pins for station telemetry.
+                </span>
+              </div>
+            </div>
+          }
+
+          <!-- 1-Day & 2-Day Forecast Cards -->
+          <div class="forecast-cards-row">
+            <!-- 1-Day Forecast -->
+            <div class="forecast-result-card" [ngClass]="getAQIClass(data.forecast_1d.value)">
+              <div class="date-tag">{{ data.forecast_1d.date }}</div>
+              <div class="horizon-badge">1-Day Forecast</div>
+              
+              <div class="aqi-display">
+                <span class="aqi-num">{{ data.forecast_1d.value }}</span>
+                <span class="aqi-label">AQI</span>
+              </div>
+              
+              <span class="cat-pill">{{ data.forecast_1d.category }}</span>
+              <div class="transparency-tag">Powered by: {{ data.forecast_1d.method }}</div>
+            </div>
+
+            <!-- 2-Day Forecast -->
+            <div class="forecast-result-card" [ngClass]="getAQIClass(data.forecast_2d.value)">
+              <div class="date-tag">{{ data.forecast_2d.date }}</div>
+              <div class="horizon-badge">2-Day Forecast</div>
+              
+              <div class="aqi-display">
+                <span class="aqi-num">{{ data.forecast_2d.value }}</span>
+                <span class="aqi-label">AQI</span>
+              </div>
+              
+              <span class="cat-pill">{{ data.forecast_2d.category }}</span>
+              <div class="transparency-tag">Powered by: {{ data.forecast_2d.method }}</div>
+            </div>
+          </div>
+
+          <!-- CPCB Station Observations list -->
+          @if (liveAqiData(); as liveData) {
+            @if (liveData.stations && liveData.stations.length > 0) {
+              <div class="station-drawer-card">
+                <div class="station-drawer-header">
+                  <span class="drawer-icon">🏭</span>
+                  <h5>CPCB Station Observations ({{ liveData.city }})</h5>
+                </div>
+                <p class="station-drawer-help">Station AQIs represent individual monitor values calculated using standard breakpoints, separate from the derived city average.</p>
+                <div class="station-list-scroll">
+                  @for (st of liveData.stations; track st.name) {
+                    @if (st.aqi !== null) {
+                      <div class="station-item-row">
+                        <span class="station-name-label">📍 {{ st.name }}</span>
+                        <span class="station-aqi-value" [ngClass]="getAQIClass(st.aqi)">
+                          AQI: {{ st.aqi }}
+                        </span>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            }
+          }
+
+
+          <!-- Medical Prescription advisory note -->
+          <div class="prescription-form-card">
+            <div class="rx-header">
+              <span class="rx-symbol">℞</span>
+              <div class="rx-doctor-info">
+                <h5>Clinical Advisory Plan</h5>
+                <p>Profile: {{ data.profile }}</p>
+              </div>
+            </div>
+            
+            <div class="rx-body">
+              <div class="prescription-section">
+                <h6>1-Day Outpatient Precautions (Tomorrow):</h6>
+                <ul class="bullet-list-rx">
+                  @for (bullet of getAdvisoryBullets(data.forecast_1d.advisory); track bullet) {
+                    <li>{{ bullet }}</li>
+                  }
+                </ul>
+              </div>
+
+              <div class="prescription-section border-top-dashed">
+                <h6>2-Day Outpatient Precautions (Day After):</h6>
+                <ul class="bullet-list-rx">
+                  @for (bullet of getAdvisoryBullets(data.forecast_2d.advisory); track bullet) {
+                    <li>{{ bullet }}</li>
+                  }
+                </ul>
+              </div>
+            </div>
+
+            <div class="rx-footer">
+              <span class="verify-seal">✓ System Generated Clinical Dispatch</span>
+              <span class="rx-date">Issued: {{ data.latest_reading_date }}</span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  </div>
+</div>

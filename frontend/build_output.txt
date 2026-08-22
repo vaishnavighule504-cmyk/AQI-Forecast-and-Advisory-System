@@ -1,0 +1,49 @@
+
+> frontend@0.0.0 build
+> ng build
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+[35mBrowser bundles[39m     
+[1mInitial chunk files[22m [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mmain-CLMV4WDQ.js[39m    [2m | [22m[2mmain[22m            [2m | [22m[36m310.10 kB[39m[2m | [22m               [36m83.50 kB[39m
+[32mstyles-OPSORIUJ.css[39m [2m | [22m[2mstyles[22m          [2m | [22m [36m11.07 kB[39m[2m | [22m                [36m2.32 kB[39m
+[32mchunk-AY4LCFTV.js[39m   [2m | [22m[2m-[22m               [2m | [22m[36m720 bytes[39m[2m | [22m              [36m720 bytes[39m
+
+[1m [22m                   [2m | [22m[1mInitial total[22m   [2m | [22m[1m321.90 kB[22m[2m | [22m               [1m86.54 kB[22m
+
+[1mLazy chunk files[22m    [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-EEYFBCKE.js[39m   [2m | [22m[2mleaflet-src[22m     [2m | [22m[36m149.55 kB[39m[2m | [22m               [36m37.61 kB[39m
+
+
+[35mServer bundles[39m      
+[1mInitial chunk files[22m [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mserver.mjs[39m          [2m | [22m[2mserver[22m          [2m | [22m[36m817.35 kB[39m[2m | [22m                       
+[32mmain.server.mjs[39m     [2m | [22m[2mmain.server[22m     [2m | [22m[36m754.76 kB[39m[2m | [22m                       
+[32mpolyfills.server.mjs[39m[2m | [22m[2mpolyfills.server[22m[2m | [22m[36m234.18 kB[39m[2m | [22m                       
+[32mchunk-ITOR7NUX.mjs[39m  [2m | [22m[2m-[22m               [2m | [22m  [36m1.38 kB[39m[2m | [22m                       
+[32mchunk-KYQQYI4M.mjs[39m  [2m | [22m[2m-[22m               [2m | [22m  [36m1.01 kB[39m[2m | [22m                       
+
+[1mLazy chunk files[22m    [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mchunk-BSLTRL75.mjs[39m  [2m | [22m[2mleaflet-src[22m     [2m | [22m[36m149.58 kB[39m[2m | [22m                       
+[32mchunk-KUERU4XA.mjs[39m  [2m | [22m[2mxhr2[22m            [2m | [22m [36m12.17 kB[39m[2m | [22m                       
+[32mchunk-LYHAGGDF.mjs[39m  [2m | [22m[2mxhr2[22m            [2m | [22m [36m12.07 kB[39m[2m | [22m                       
+
+[35mPrerendered 1 static route.[39m
+Application bundle generation complete. [13.462 seconds] - 2026-08-18T18:11:10.213Z
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: RouterOutlet is not used within the template of App[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.ts:7:12:
+[37m      7 │   imports: [[32mRouterOutlet[37m, DashboardComponent],
+        ╵             [32m~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mModule 'leaflet' used by 'src/app/components/dashboard/dashboard.component.ts' is not ESM[0m
+
+  CommonJS or AMD dependencies can cause optimization bailouts.
+  For more information see: [4mhttps://angular.dev/tools/cli/build#configuring-commonjs-dependencies[0m
+
+[39m[22m
+Output location: C:\Users\vaish\aqi-forecast-system\frontend\dist\frontend
+

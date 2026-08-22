@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 import numpy as np
 import requests
+import ollama
 
 try:
     from dotenv import load_dotenv
@@ -11,7 +12,7 @@ except ImportError:
     pass
 
 class AQIAdvisoryAgent:
-    def __init__(self, models_dir="models"):
+    def __init__(self, models_dir="../../ml_models"):
         self.models_dir = models_dir
         # City slug mapping for API compatibility
         self.city_aliases = {
@@ -107,6 +108,7 @@ class AQIAdvisoryAgent:
         predicted_value = int(round(live_aqi * (1 + percent_change)))
         predicted_value = int(np.clip(predicted_value, 15, 500))
 
+
         # Safe print diagnostics (ASCII safe to prevent encoding errors on Windows terminal)
         print(f"[Live API + ML Trend] City: {city.capitalize()}")
         print(f"  - Live Baseline AQI: {live_aqi}")
@@ -172,7 +174,17 @@ class AQIAdvisoryAgent:
         Generates a personalized, 3-bullet-point clinical advisory using a local Ollama LLM.
         Falls back to static deterministic rules if the LLM daemon is unreachable.
         """
+        import socket
         
+        def is_ollama_running():
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.settimeout(0.15)
+                    s.connect(("127.0.0.1", 11434))
+                    return True
+            except Exception:
+                return False
+
         # Define a strict system prompt tailored to the profile
         prompt = f"""
         You are a clinical respiratory expert. 
@@ -187,27 +199,10 @@ class AQIAdvisoryAgent:
         Do NOT include any introductory or concluding text. Only output the 3 bullets.
         """
         
-        try:
-            # Attempt to call the local Ollama LLM (e.g., llama3 or mistral)
-            response = ollama.chat(model='llama3', messages=[
-                {'role': 'system', 'content': 'You are a direct, concise medical advisory system.'},
-                {'role': 'user', 'content': prompt}
-            ])
-            
-            advisory_text = response['message']['content'].strip()
-            
-            # Safety check to ensure the LLM actually returned text
-            if not advisory_text:
-                raise ValueError("Empty response from local LLM.")
-                
-            return advisory_text
-    
-        except Exception as e:
-            print(f"\n[LLM Fallback Warning] Local Ollama service failed: {e}. Using deterministic fallback.\n")
-            
-            # ==============================================================
-            # DETERMINISTIC STATIC FALLBACK
-            # ==============================================================
+        # Check if Ollama port is open first to avoid slow timeouts
+        if not is_ollama_running():
+            print("[LLM Fallback Alert] Ollama server is offline. Using fast deterministic fallback.")
+            # Execute static fallback
             lookup_profile = profile_type.strip().lower()
             if lookup_profile in ['asthma', 'respiratory', 'elderly', 'child']:
                 if predicted_aqi <= 100:
@@ -218,7 +213,6 @@ class AQIAdvisoryAgent:
                     return ("- Outdoor time: Stay indoors; keep windows closed and run air purifiers.\n"
                             "- Masks: Wear a well-fitted N95 mask if you must go outside.\n"
                             "- Medication: Keep emergency inhalers ready and avoid all outdoor physical exertion.")
-                    
             elif lookup_profile in ['outdoor worker', 'traffic police', 'delivery']:
                 if predicted_aqi <= 100:
                     return ("- Outdoor time: Standard outdoor operations can proceed safely.\n"
@@ -228,7 +222,6 @@ class AQIAdvisoryAgent:
                     return ("- Outdoor time: Take regular 15-minute indoor breathing breaks every hour.\n"
                             "- Masks: Fit-tested N95 masks are mandatory during shifts.\n"
                             "- Precautions: Reduce heavy physical lifting outdoors where possible.")
-                    
             else: # General Public
                 if predicted_aqi <= 100:
                     return ("- Outdoor time: Safe for routine day-to-day activities.\n"
@@ -238,33 +231,64 @@ class AQIAdvisoryAgent:
                     return ("- Outdoor time: Avoid strenuous morning jogging or intense outdoor workouts.\n"
                             "- Masks: Consider an N95 mask for prolonged outdoor exposure.\n"
                             "- Precautions: Limit intense physical exertion outside.")
+        import threading
+        
+        result_container = []
+        error_container = []
+        
+        def call_ollama():
+            try:
+                res = ollama.chat(model='llama3', messages=[
+                    {'role': 'system', 'content': 'You are a direct, concise medical advisory system.'},
+                    {'role': 'user', 'content': prompt}
+                ])
+                val = res['message']['content'].strip()
+                if val:
+                    result_container.append(val)
+            except Exception as e:
+                error_container.append(e)
 
-
-# =====================================================================
-# DEMO EXECUTION
-# =====================================================================
-if __name__ == "__main__":
-    import sys
-    try:
-        sys.stdout.reconfigure(encoding='utf-8')
-    except AttributeError:
-        pass
-
-    print("\n=================================================")
-    print("      AI ADVISORY AGENT - LOCAL DEMO RUN")
-    print("=================================================\n")
-
-    agent = AQIAdvisoryAgent(models_dir="models")
-    test_cities = ["Mumbai", "Bengaluru", "Delhi"]
-    user_profile = "Asthma"
-
-    for city in test_cities:
-        try:
-            predicted_aqi, forecast_date = agent.predict_tomorrow_aqi(city=city)
-            category, color, advice = agent.generate_health_advisory(predicted_aqi, user_profile, city_name=city)
-            print(f"City: {city} | Forecast Date: {forecast_date}")
-            print(f"Predicted AQI: {predicted_aqi} | Category: {category} ({color})")
-            print(f"Advisory: {advice}")
-        except Exception as e:
-            print(f"Error for {city}: {e}")
-        print("-" * 55 + "\n")
+        thread = threading.Thread(target=call_ollama)
+        thread.daemon = True
+        thread.start()
+        thread.join(timeout=0.4)
+        
+        if result_container:
+            return result_container[0]
+            
+        print("[LLM Fallback Alert] Ollama daemon did not respond within 0.4 seconds or raised an error. Using fast deterministic fallback.")
+        
+        # ==============================================================
+        # DETERMINISTIC STATIC FALLBACK
+        # ==============================================================
+        lookup_profile = profile_type.strip().lower()
+        if lookup_profile in ['asthma', 'respiratory', 'elderly', 'child']:
+            if predicted_aqi <= 100:
+                return ("- Outdoor time: Routine outdoor activities are safe.\n"
+                        "- Masks: No mask required.\n"
+                        "- Medication: Carry emergency inhalers just in case.")
+            else:
+                return ("- Outdoor time: Stay indoors; keep windows closed and run air purifiers.\n"
+                        "- Masks: Wear a well-fitted N95 mask if you must go outside.\n"
+                        "- Medication: Keep emergency inhalers ready and avoid all outdoor physical exertion.")
+                
+        elif lookup_profile in ['outdoor worker', 'traffic police', 'delivery']:
+            if predicted_aqi <= 100:
+                return ("- Outdoor time: Standard outdoor operations can proceed safely.\n"
+                        "- Masks: No mask required.\n"
+                        "- Precautions: Stay hydrated during shifts.")
+            else:
+                return ("- Outdoor time: Take regular 15-minute indoor breathing breaks every hour.\n"
+                        "- Masks: Fit-tested N95 masks are mandatory during shifts.\n"
+                        "- Precautions: Reduce heavy physical lifting outdoors where possible.")
+                
+        else: # General Public
+            if predicted_aqi <= 100:
+                return ("- Outdoor time: Safe for routine day-to-day activities.\n"
+                        "- Masks: Optional.\n"
+                        "- Precautions: None required.")
+            else:
+                return ("- Outdoor time: Avoid strenuous morning jogging or intense outdoor workouts.\n"
+                        "- Masks: Consider an N95 mask for prolonged outdoor exposure.\n"
+                        "- Precautions: Limit intense physical exertion outside.")
+
