@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-5o054xj$j9q=5_)(5a8!di5vd!yb8&yfj@58g$#@y6957!--&5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -82,26 +82,16 @@ WSGI_APPLICATION = 'aqi_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-USE_POSTGRES = os.getenv('USE_POSTGRES', 'False').lower() in ('true', '1')
-
-if USE_POSTGRES:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'aqi_forecast_db'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'aqi_DB',          
+        'USER': 'postgres',        
+        'PASSWORD': 'Aditya@2005',  # <-- CHANGE THIS TO YOUR PGADMIN PASSWORD
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 
 # Password validation

@@ -1,4 +1,7 @@
 import os
+import joblib
+import numpy as np
+from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -6,8 +9,16 @@ from .agent_advisory import AQIAdvisoryAgent
 from .services import get_forecast
 from .models import AQIReading
 
+# --- LOAD SAVED MACHINE LEARNING MODEL ---
+MODEL_PATH = os.path.join(settings.BASE_DIR, 'aqi_model.pkl')
+try:
+    ml_model = joblib.load(MODEL_PATH)
+except Exception:
+    ml_model = None
+
+
 @api_view(["GET", "POST"])
-def forecast_view(request):
+def forecast_view(request):    
     """
     GET /api/forecast?city=X&profile=Y
     POST /api/forecast (body: {"city": "X", "profile": "Y"})
@@ -70,6 +81,7 @@ def forecast_view(request):
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
+
 @api_view(["GET"])
 def live_aqi_view(request):
     """
@@ -82,5 +94,34 @@ def live_aqi_view(request):
         from .services import fetch_live_cpcb_data
         result = fetch_live_cpcb_data(city)
         return Response(result)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+
+@api_view(["POST"])
+def model_predict_view(request):
+    """
+    POST /api/model-predict/
+    Body: {"features": [val1, val2, ...]}
+    
+    Directly feeds feature inputs into the saved aqi_model.pkl to compute predictions.
+    """
+    if ml_model is None:
+        return Response({"error": "Model file 'aqi_model.pkl' could not be loaded on the server."}, status=500)
+    
+    try:
+        features = request.data.get("features")
+        if not features:
+            return Response({"error": "Missing 'features' list in request payload."}, status=400)
+        
+        # Reshape features to match model expectation (1 sample, N features)
+        input_data = np.array(features).reshape(1, -1)
+        prediction = ml_model.predict(input_data)[0]
+        
+        return Response({
+            "status": "success",
+            "predicted_aqi": round(float(prediction), 2)
+        }, status=200)
+        
     except Exception as e:
         return Response({"error": str(e)}, status=500)

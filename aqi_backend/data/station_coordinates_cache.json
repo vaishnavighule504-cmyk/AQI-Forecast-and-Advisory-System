@@ -1,0 +1,382 @@
+{
+    "DL001": {
+        "latitude": 28.7973118,
+        "longitude": 77.138667,
+        "source": "nominatim"
+    },
+    "DL002": {
+        "latitude": 28.646841,
+        "longitude": 77.3160332,
+        "source": "nominatim"
+    },
+    "DL003": {
+        "latitude": 28.6885171,
+        "longitude": 77.1739339,
+        "source": "nominatim"
+    },
+    "DL004": {
+        "latitude": 28.4764911,
+        "longitude": 77.1329132,
+        "source": "nominatim"
+    },
+    "DL005": {
+        "latitude": 28.79966,
+        "longitude": 77.0328847,
+        "source": "nominatim"
+    },
+    "DL006": {
+        "latitude": 28.7285944,
+        "longitude": 77.1993251,
+        "source": "nominatim"
+    },
+    "DL007": {
+        "latitude": 28.5500925,
+        "longitude": 77.2751557,
+        "source": "nominatim"
+    },
+    "DL008": {
+        "latitude": 28.7508153,
+        "longitude": 77.1162765,
+        "source": "nominatim"
+    },
+    "DL009": {
+        "latitude": 28.5000822,
+        "longitude": 77.2675147,
+        "source": "nominatim"
+    },
+    "DL010": {
+        "latitude": 28.5656109,
+        "longitude": 77.0670366,
+        "source": "nominatim"
+    },
+    "DL011": {
+        "latitude": 28.6569534,
+        "longitude": 77.2947178,
+        "source": "nominatim"
+    },
+    "DL012": {
+        "latitude": 28.5552482,
+        "longitude": 77.0903517,
+        "source": "nominatim"
+    },
+    "DL013": {
+        "latitude": 28.6139,
+        "longitude": 77.209,
+        "source": "city_fallback"
+    },
+    "DL014": {
+        "latitude": 28.6281909,
+        "longitude": 77.2410437,
+        "source": "nominatim"
+    },
+    "DL015": {
+        "latitude": 28.7259717,
+        "longitude": 77.162658,
+        "source": "nominatim"
+    },
+    "DL016": {
+        "latitude": 28.5833771,
+        "longitude": 77.2335404,
+        "source": "nominatim"
+    },
+    "DL017": {
+        "latitude": 28.5907833,
+        "longitude": 77.2263179,
+        "source": "nominatim"
+    },
+    "DL018": {
+        "latitude": 28.6126342,
+        "longitude": 77.2373304,
+        "source": "nominatim"
+    },
+    "DL019": {
+        "latitude": 28.6383914,
+        "longitude": 77.2033216,
+        "source": "nominatim"
+    },
+    "DL020": {
+        "latitude": 28.6824341,
+        "longitude": 77.0305741,
+        "source": "nominatim"
+    },
+    "DL021": {
+        "latitude": 28.6139,
+        "longitude": 77.209,
+        "source": "city_fallback"
+    },
+    "DL022": {
+        "latitude": 28.6124504,
+        "longitude": 76.9865067,
+        "source": "nominatim"
+    },
+    "DL023": {
+        "latitude": 28.8464766,
+        "longitude": 77.0856631,
+        "source": "nominatim"
+    },
+    "DL024": {
+        "latitude": 28.5685108,
+        "longitude": 77.2513847,
+        "source": "nominatim"
+    },
+    "DL025": {
+        "latitude": 28.689099,
+        "longitude": 77.2134707,
+        "source": "nominatim"
+    },
+    "DL026": {
+        "latitude": 28.5374876,
+        "longitude": 77.2779069,
+        "source": "nominatim"
+    },
+    "DL027": {
+        "latitude": 28.6115923,
+        "longitude": 77.2905644,
+        "source": "nominatim"
+    },
+    "DL028": {
+        "latitude": 28.672995,
+        "longitude": 77.1461239,
+        "source": "nominatim"
+    },
+    "DL029": {
+        "latitude": 28.6362997,
+        "longitude": 77.1576444,
+        "source": "nominatim"
+    },
+    "DL030": {
+        "latitude": 28.6362997,
+        "longitude": 77.1576444,
+        "source": "nominatim"
+    },
+    "DL031": {
+        "latitude": 28.5503805,
+        "longitude": 77.1855231,
+        "source": "nominatim"
+    },
+    "DL032": {
+        "latitude": 28.7063083,
+        "longitude": 77.1087892,
+        "source": "nominatim"
+    },
+    "DL033": {
+        "latitude": 28.6515829,
+        "longitude": 77.1582587,
+        "source": "nominatim"
+    },
+    "DL034": {
+        "latitude": 28.5501575,
+        "longitude": 77.2249099,
+        "source": "nominatim"
+    },
+    "DL035": {
+        "latitude": 28.7199257,
+        "longitude": 77.2481823,
+        "source": "nominatim"
+    },
+    "DL036": {
+        "latitude": 28.5396291,
+        "longitude": 77.2000301,
+        "source": "nominatim"
+    },
+    "DL037": {
+        "latitude": 28.6691641,
+        "longitude": 77.312267,
+        "source": "nominatim"
+    },
+    "DL038": {
+        "latitude": 28.6800843,
+        "longitude": 77.1702212,
+        "source": "nominatim"
+    },
+    "GJ001": {
+        "latitude": 22.9986596,
+        "longitude": 72.6114013,
+        "source": "nominatim"
+    },
+    "KA002": {
+        "latitude": 12.9140008,
+        "longitude": 77.6102821,
+        "source": "nominatim"
+    },
+    "KA003": {
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "source": "city_fallback"
+    },
+    "KA004": {
+        "latitude": 12.9556699,
+        "longitude": 77.5402492,
+        "source": "nominatim"
+    },
+    "KA005": {
+        "latitude": 12.9775068,
+        "longitude": 77.5707681,
+        "source": "nominatim"
+    },
+    "KA006": {
+        "latitude": 13.0382184,
+        "longitude": 77.5919,
+        "source": "nominatim"
+    },
+    "KA007": {
+        "latitude": 12.9301311,
+        "longitude": 77.6012981,
+        "source": "nominatim"
+    },
+    "KA008": {
+        "latitude": 12.9196037,
+        "longitude": 77.583381,
+        "source": "nominatim"
+    },
+    "KA009": {
+        "latitude": 13.0329814,
+        "longitude": 77.5331801,
+        "source": "nominatim"
+    },
+    "KA010": {
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "source": "city_fallback"
+    },
+    "KA011": {
+        "latitude": 12.9168164,
+        "longitude": 77.6223685,
+        "source": "nominatim"
+    },
+    "MH005": {
+        "latitude": 19.0549792,
+        "longitude": 72.8402203,
+        "source": "nominatim"
+    },
+    "MH006": {
+        "latitude": 19.2187187,
+        "longitude": 72.8654856,
+        "source": "nominatim"
+    },
+    "MH007": {
+        "latitude": 19.1023335,
+        "longitude": 72.8744692,
+        "source": "nominatim"
+    },
+    "MH008": {
+        "latitude": 18.915091,
+        "longitude": 72.8259691,
+        "source": "nominatim"
+    },
+    "MH009": {
+        "latitude": 19.0652797,
+        "longitude": 72.8793805,
+        "source": "nominatim"
+    },
+    "MH010": {
+        "latitude": 19.1187195,
+        "longitude": 72.9073476,
+        "source": "nominatim"
+    },
+    "MH011": {
+        "latitude": 19.0465213,
+        "longitude": 72.8632834,
+        "source": "nominatim"
+    },
+    "MH012": {
+        "latitude": 19.076,
+        "longitude": 72.8777,
+        "source": "city_fallback"
+    },
+    "MH013": {
+        "latitude": 19.103908,
+        "longitude": 72.840301,
+        "source": "nominatim"
+    },
+    "MH014": {
+        "latitude": 19.0117388,
+        "longitude": 72.8178706,
+        "source": "nominatim"
+    },
+    "TN001": {
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "source": "city_fallback"
+    },
+    "TN002": {
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "source": "city_fallback"
+    },
+    "TN003": {
+        "latitude": 13.1810602,
+        "longitude": 80.2694192,
+        "source": "nominatim"
+    },
+    "TN004": {
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "source": "city_fallback"
+    },
+    "TG001": {
+        "latitude": 17.385,
+        "longitude": 78.4867,
+        "source": "city_fallback"
+    },
+    "TG002": {
+        "latitude": 17.4669527,
+        "longitude": 78.3300979,
+        "source": "nominatim"
+    },
+    "TG003": {
+        "latitude": 17.385,
+        "longitude": 78.4867,
+        "source": "city_fallback"
+    },
+    "TG004": {
+        "latitude": 17.385,
+        "longitude": 78.4867,
+        "source": "city_fallback"
+    },
+    "TG005": {
+        "latitude": 17.4569654,
+        "longitude": 78.4434781,
+        "source": "nominatim"
+    },
+    "TG006": {
+        "latitude": 17.356903,
+        "longitude": 78.4514929,
+        "source": "nominatim"
+    },
+    "WB007": {
+        "latitude": 22.5280337,
+        "longitude": 88.3659084,
+        "source": "nominatim"
+    },
+    "WB008": {
+        "latitude": 22.5917378,
+        "longitude": 88.3909399,
+        "source": "nominatim"
+    },
+    "WB009": {
+        "latitude": 22.5544966,
+        "longitude": 88.3380132,
+        "source": "nominatim"
+    },
+    "WB010": {
+        "latitude": 22.495499,
+        "longitude": 88.3709006,
+        "source": "nominatim"
+    },
+    "WB011": {
+        "latitude": 22.6269661,
+        "longitude": 88.3804981,
+        "source": "nominatim"
+    },
+    "WB012": {
+        "latitude": 22.5122563,
+        "longitude": 88.3635738,
+        "source": "nominatim"
+    },
+    "WB013": {
+        "latitude": 22.5497838,
+        "longitude": 88.3391136,
+        "source": "nominatim"
+    }
+}
