@@ -1,0 +1,45 @@
+﻿
+> frontend@0.0.0 build
+> ng build
+
+[33mΓ¥»[39m Building...
+[32mΓ£ö[39m Building...
+[35mPrerendered 0 static routes.[39m
+Application bundle generation failed. [3.543 seconds] - 2026-10-08T18:52:37.029Z
+
+node.exe : [1m[31m[31mX 
+[41;31m[[41;97mERROR[41;31m][0m [1mTS2345: 
+Argument of type 'number | null' is not assignable 
+to parameter of type 'number'.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([1m 
+   [31m[31mX... type 'number'.:String) [], Remot  
+  eException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Type 'null' is not assignable to type 
+'number'.[0m [1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/components/dashboard/dashboard.componen
+t.html:188:66:
+[37m      188 Γöé ...[ngClass]="getAQIClass(statio
+n.[32maqi[37m)">{{ station.aqi }} AQI</span>
+          Γò╡                                   
+[32m~~~[0m
+
+  Error occurs in the template of component 
+DashboardComponent.
+
+    src/app/components/dashboard/dashboard.componen
+t.ts:10:15:
+[37m      10 Γöé   templateUrl: 
+[32m'./dashboard.component.html'[37m,
+         Γò╡                
+[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m

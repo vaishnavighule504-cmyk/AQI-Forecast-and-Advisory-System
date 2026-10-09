@@ -1,0 +1,185 @@
+<div class="landing-wrapper">
+  <!-- Navigation Header -->
+  <header class="landing-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-icon">🍃</span>
+        <span class="brand-name">SaansCast</span>
+      </div>
+      <nav class="landing-nav">
+        <a href="#product-flow">How it Works</a>
+        <a href="#features">Features</a>
+        <a href="#cities">7 Cities</a>
+      </nav>
+      <div class="header-actions">
+        <a routerLink="/login" class="nav-login-btn">Sign In</a>
+        <a routerLink="/app/dashboard" class="nav-app-btn">Launch Shell</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="atmospheric-sky-backdrop">
+      <div class="cloud-haze-layer haze-1"></div>
+      <div class="cloud-haze-layer haze-2"></div>
+      <div class="sky-glow-overlay"></div>
+    </div>
+
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span class="pulse-dot"></span>
+          <span>Next-Gen Environmental Intelligence</span>
+        </div>
+        <h1 class="hero-title">Know tomorrow's air today.</h1>
+        <p class="hero-subtitle">
+          Real-time CPCB telemetry streams, high-precision machine learning predictions, and physician-guided clinical advisories designed to safeguard respiratory health.
+        </p>
+
+        <div class="hero-actions">
+          <a routerLink="/app/dashboard" class="primary-cta">
+            Explore SaansCast <span class="arrow">→</span>
+          </a>
+          <a routerLink="/app/dashboard" class="secondary-cta">
+            View Dashboard
+          </a>
+        </div>
+      </div>
+
+      <!-- Atmospheric Hero Visual Area -->
+      <div class="hero-visual">
+        <div class="aqi-preview-card">
+          <div class="card-glass-header">
+            <div class="station-meta">
+              <span class="meta-city">Delhi • Active Station Telemetry</span>
+              <span class="meta-date">24h & 48h Outlook</span>
+            </div>
+            <span class="live-tag">LIVE TELEMETRY</span>
+          </div>
+
+          <div class="aqi-main-metric">
+            <div class="metric-block">
+              <span class="metric-value">184</span>
+              <span class="metric-unit">AQI</span>
+            </div>
+            <div class="metric-badge moderate-bg">
+              Moderate Risk
+            </div>
+          </div>
+
+          <div class="aqi-preview-grid">
+            <div class="forecast-preview-item">
+              <span class="item-time">Tomorrow (+1D)</span>
+              <span class="item-value">192 AQI</span>
+              <span class="item-method">Ridge ML</span>
+            </div>
+            <div class="forecast-preview-item">
+              <span class="item-time">Day After (+2D)</span>
+              <span class="item-value">178 AQI</span>
+              <span class="item-method">Random Forest</span>
+            </div>
+          </div>
+
+          <div class="advisory-preview-strip">
+            <span class="rx-icon">℞</span>
+            <span class="strip-text">Asthma & Vulnerable: Limit prolonged outdoor exertion during peak hours.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Flow Section -->
+  <section id="product-flow" class="flow-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">INTELLIGENCE PIPELINE</span>
+        <h2 class="section-title">The SaansCast Product Engine</h2>
+        <p class="section-subtitle">How raw sensor signals translate into actionable health decisions.</p>
+      </div>
+
+      <div class="flow-grid">
+        <div *ngFor="let step of productSteps" class="flow-card">
+          <div class="flow-card-top">
+            <span class="step-num">{{ step.step }}</span>
+            <span class="step-action">{{ step.action }}</span>
+          </div>
+          <h3 class="flow-card-title">{{ step.title }}</h3>
+          <p class="flow-card-desc">{{ step.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">CORE CAPABILITIES</span>
+        <h2 class="section-title">Built for Environmental & Clinical Impact</h2>
+      </div>
+
+      <div class="features-grid">
+        <div *ngFor="let feat of features" class="feature-card">
+          <div class="feat-icon">{{ feat.icon }}</div>
+          <h3 class="feat-title">{{ feat.title }}</h3>
+          <p class="feat-desc">{{ feat.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 Cities Preview Section -->
+  <section id="cities" class="cities-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">NATIONAL COVERAGE</span>
+        <h2 class="section-title">7 Pilot Metropolitan Hubs</h2>
+        <p class="section-subtitle">Real-time monitoring and ML forecasting deployed across India's key urban regions.</p>
+      </div>
+
+      <div class="cities-grid">
+        <div *ngFor="let city of cities" class="city-preview-card" routerLink="/app/dashboard">
+          <div class="city-info">
+            <h4 class="city-name">{{ city.name }}</h4>
+            <span class="city-state">{{ city.state }}</span>
+          </div>
+          <div class="city-aqi-pill" [ngClass]="city.colorClass">
+            <span class="city-aqi-num">{{ city.sampleAqi }}</span>
+            <span class="city-aqi-status">{{ city.status }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="final-cta-section">
+    <div class="final-cta-card">
+      <div class="cta-backdrop"></div>
+      <div class="cta-content">
+        <h2>Ready to protect your health with air quality foresight?</h2>
+        <p>Access live telemetry, 48-hour forecasts, and physician-formulated health advisories.</p>
+        <div class="cta-actions">
+          <a routerLink="/login" class="cta-btn-primary">Sign In / Register Now</a>
+          <a routerLink="/app/dashboard" class="cta-btn-secondary">Explore Live App</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-icon">🍃</span>
+        <span class="brand-name">SaansCast</span>
+        <p>Know tomorrow's air today.</p>
+      </div>
+      <div class="footer-copyright">
+        © 2026 SaansCast Environmental Intelligence. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</div>
