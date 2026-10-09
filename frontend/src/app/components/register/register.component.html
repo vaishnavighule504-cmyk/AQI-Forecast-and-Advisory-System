@@ -1,0 +1,67 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand-logo">
+        <span class="leaf-icon">🍃</span>
+        <span class="brand-title">SaansCast</span>
+      </div>
+      <p class="brand-tagline">Know tomorrow's air today.</p>
+    </div>
+
+    <h2 class="auth-heading">Create Account</h2>
+    <p class="auth-subtext">Join SaansCast to monitor, forecast, and protect your health from air pollution.</p>
+
+    <div *ngIf="errorMessage()" class="error-banner">
+      {{ errorMessage() }}
+    </div>
+
+    <form (ngSubmit)="onRegister()" class="auth-form">
+      <div class="form-group">
+        <label for="reg-username">Full Name / Username</label>
+        <input 
+          type="text" 
+          id="reg-username" 
+          name="username"
+          [ngModel]="username()" 
+          (ngModelChange)="username.set($event)"
+          placeholder="e.g. Dr. Ayesha Khan" 
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Email Address</label>
+        <input 
+          type="email" 
+          id="reg-email" 
+          name="email"
+          [ngModel]="email()" 
+          (ngModelChange)="email.set($event)"
+          placeholder="ayesha@example.com" 
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Password</label>
+        <input 
+          type="password" 
+          id="reg-password" 
+          name="password"
+          [ngModel]="password()" 
+          (ngModelChange)="password.set($event)"
+          placeholder="••••••••" 
+          required
+        />
+      </div>
+
+      <button type="submit" class="auth-submit-btn">
+        Create Account & Launch Shell
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Already have an account? <a routerLink="/login">Sign In here</a></p>
+    </div>
+  </div>
+</div>

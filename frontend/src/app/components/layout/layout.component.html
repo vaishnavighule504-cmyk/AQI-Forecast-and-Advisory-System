@@ -1,0 +1,62 @@
+<div class="shell-wrapper" [class.dark-theme]="isDarkMode()">
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <!-- Brand Logo & Name -->
+      <div class="brand-section" routerLink="/app/dashboard">
+        <div class="brand-icon">🍃</div>
+        <div class="brand-text">
+          <span class="brand-name">SaansCast</span>
+          <span class="brand-tagline">Know tomorrow's air today.</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links" [class.mobile-open]="mobileMenuOpen()">
+        <a routerLink="/app/dashboard" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a routerLink="/app/compare" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon">⚖️</span> Compare
+        </a>
+        <a routerLink="/app/alerts" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon">🔔</span> Alerts
+        </a>
+        <a routerLink="/app/model" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon">🤖</span> Model
+        </a>
+      </nav>
+
+      <!-- Action Bar Tools -->
+      <div class="header-actions">
+        <!-- City Selector -->
+        <div class="city-selector-wrapper" title="Quick City Selector">
+          <span class="city-icon">📍</span>
+          <select [value]="selectedCity()" (change)="onCityChange($event)" class="city-select">
+            <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" (click)="toggleTheme()" title="Toggle Theme">
+          <span>{{ isDarkMode() ? '☀️ Light' : '🌙 Dark' }}</span>
+        </button>
+
+        <!-- Logout Button -->
+        <button class="logout-btn" (click)="onLogout()" title="Logout">
+          <span>Sign Out</span>
+        </button>
+
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" (click)="toggleMobileMenu()">
+          <span>☰</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Shell Content Area -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
