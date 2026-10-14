@@ -73,7 +73,7 @@ def run_late_verification():
     df['Date'] = pd.to_datetime(df['Date'])
     
     # 3. Filter for 2025, pick Delhi, and get the LAST 15 days of the year
-    city_to_test = 'Mumbai'
+    city_to_test = 'Bengaluru'
     df_2025 = df[(df['Date'].dt.year == 2025) & (df['City'] == city_to_test)].sort_values('Date').copy()
     
     if df_2025.empty:
