@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import requests
 import ollama
+import socket
+import threading
 
 try:
     from dotenv import load_dotenv
@@ -67,54 +69,38 @@ class AQIAdvisoryAgent:
 
     def predict_tomorrow_aqi(self, city="Delhi"):
         city_slug = city.strip().lower()
-        model_file = os.path.join(self.models_dir, f"prophet_{city_slug}.pkl")
+        model_file = os.path.join(self.models_dir, "aqi_model.pkl")
 
         # 1. Fetch live ground-truth AQI (raises exception on failure)
         live_aqi = self.fetch_live_aqi(city_slug)
         if live_aqi <= 0:
             raise RuntimeError(f"Invalid non-positive live AQI value fetched for {city}: {live_aqi}")
 
-        # 2. Extract ML Seasonal Trend Delta from Prophet
-        percent_change = 0.02  # Default +2% drift
-        t_today = None
-        t_tomorrow = None
+        predicted_value = live_aqi
+        method_used = "Baseline Live Telemetry"
 
+        # 2. Use your custom trained machine learning model instead of Prophet
         if os.path.exists(model_file):
             try:
                 model = joblib.load(model_file)
-                # Map to last year of training data (2020) for same month/day seasonality
-                now = pd.Timestamp.now()
-                ds_today = pd.Timestamp(year=2020, month=now.month, day=now.day)
-                ds_tomorrow = ds_today + pd.Timedelta(days=1)
-
-                future_df = pd.DataFrame({
-                    'ds': [ds_today, ds_tomorrow], 
-                    'cap': [500, 500], 
-                    'floor': [10, 10]
-                })
+                # Construct feature input matching your custom model training shape
+                # (e.g., [live_aqi, temperature, humidity, wind_speed])
+                features = np.array([[float(live_aqi), 30.0, 50.0, 5.0]])
                 
-                forecast = model.predict(future_df)
-                t_today = float(forecast[forecast['ds'] == ds_today]['yhat'].values[0])
-                t_tomorrow = float(forecast[forecast['ds'] == ds_tomorrow]['yhat'].values[0])
-                
-                if t_today > 0:
-                    raw_change = (t_tomorrow - t_today) / t_today
-                    # Clip daily change to realistic physical limits (-15% to +15%)
-                    percent_change = float(np.clip(raw_change, -0.15, 0.15))
+                if hasattr(model, "predict"):
+                    pred_res = model.predict(features)
+                    predicted_value = int(round(float(pred_res[0])))
+                    method_used = "Custom ML Model (aqi_model.pkl)"
             except Exception as e:
-                print(f"[Prophet Warning] Trend calculation failed for {city}: {e}")
+                print(f"[Model Warning] Custom model inference failed for {city}: {e}, falling back to baseline.")
 
-        # 3. Calculate final predicted AQI
-        predicted_value = int(round(live_aqi * (1 + percent_change)))
+        # Clip prediction to realistic physical limits
         predicted_value = int(np.clip(predicted_value, 15, 500))
 
-
-        # Safe print diagnostics (ASCII safe to prevent encoding errors on Windows terminal)
-        print(f"[Live API + ML Trend] City: {city.capitalize()}")
+        # Safe print diagnostics
+        print(f"[Live API + Custom ML] City: {city.capitalize()}")
         print(f"  - Live Baseline AQI: {live_aqi}")
-        print(f"  - Prophet yhat Today: {t_today if t_today is not None else 'N/A'}")
-        print(f"  - Prophet yhat Tomorrow: {t_tomorrow if t_tomorrow is not None else 'N/A'}")
-        print(f"  - ML Seasonal Delta: {percent_change*100:+.1f}%")
+        print(f"  - Method Used: {method_used}")
         print(f"  - Predicted Tomorrow AQI: {predicted_value}")
 
         return predicted_value, (pd.Timestamp.now() + pd.Timedelta(days=1)).strftime('%Y-%m-%d')
@@ -174,8 +160,6 @@ class AQIAdvisoryAgent:
         Generates a personalized, 3-bullet-point clinical advisory using a local Ollama LLM.
         Falls back to static deterministic rules if the LLM daemon is unreachable.
         """
-        import socket
-        
         def is_ollama_running():
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -202,39 +186,9 @@ class AQIAdvisoryAgent:
         # Check if Ollama port is open first to avoid slow timeouts
         if not is_ollama_running():
             print("[LLM Fallback Alert] Ollama server is offline. Using fast deterministic fallback.")
-            # Execute static fallback
-            lookup_profile = profile_type.strip().lower()
-            if lookup_profile in ['asthma', 'respiratory', 'elderly', 'child']:
-                if predicted_aqi <= 100:
-                    return ("- Outdoor time: Routine outdoor activities are safe.\n"
-                            "- Masks: No mask required.\n"
-                            "- Medication: Carry emergency inhalers just in case.")
-                else:
-                    return ("- Outdoor time: Stay indoors; keep windows closed and run air purifiers.\n"
-                            "- Masks: Wear a well-fitted N95 mask if you must go outside.\n"
-                            "- Medication: Keep emergency inhalers ready and avoid all outdoor physical exertion.")
-            elif lookup_profile in ['outdoor worker', 'traffic police', 'delivery']:
-                if predicted_aqi <= 100:
-                    return ("- Outdoor time: Standard outdoor operations can proceed safely.\n"
-                            "- Masks: No mask required.\n"
-                            "- Precautions: Stay hydrated during shifts.")
-                else:
-                    return ("- Outdoor time: Take regular 15-minute indoor breathing breaks every hour.\n"
-                            "- Masks: Fit-tested N95 masks are mandatory during shifts.\n"
-                            "- Precautions: Reduce heavy physical lifting outdoors where possible.")
-            else: # General Public
-                if predicted_aqi <= 100:
-                    return ("- Outdoor time: Safe for routine day-to-day activities.\n"
-                            "- Masks: Optional.\n"
-                            "- Precautions: None required.")
-                else:
-                    return ("- Outdoor time: Avoid strenuous morning jogging or intense outdoor workouts.\n"
-                            "- Masks: Consider an N95 mask for prolonged outdoor exposure.\n"
-                            "- Precautions: Limit intense physical exertion outside.")
-        import threading
-        
+            return self._get_static_fallback(predicted_aqi, profile_type)
+
         result_container = []
-        error_container = []
         
         def call_ollama():
             try:
@@ -245,8 +199,8 @@ class AQIAdvisoryAgent:
                 val = res['message']['content'].strip()
                 if val:
                     result_container.append(val)
-            except Exception as e:
-                error_container.append(e)
+            except Exception:
+                pass
 
         thread = threading.Thread(target=call_ollama)
         thread.daemon = True
@@ -256,11 +210,10 @@ class AQIAdvisoryAgent:
         if result_container:
             return result_container[0]
             
-        print("[LLM Fallback Alert] Ollama daemon did not respond within 0.4 seconds or raised an error. Using fast deterministic fallback.")
-        
-        # ==============================================================
-        # DETERMINISTIC STATIC FALLBACK
-        # ==============================================================
+        print("[LLM Fallback Alert] Ollama daemon did not respond within 0.4 seconds. Using fast deterministic fallback.")
+        return self._get_static_fallback(predicted_aqi, profile_type)
+
+    def _get_static_fallback(self, predicted_aqi, profile_type):
         lookup_profile = profile_type.strip().lower()
         if lookup_profile in ['asthma', 'respiratory', 'elderly', 'child']:
             if predicted_aqi <= 100:
@@ -291,4 +244,3 @@ class AQIAdvisoryAgent:
                 return ("- Outdoor time: Avoid strenuous morning jogging or intense outdoor workouts.\n"
                         "- Masks: Consider an N95 mask for prolonged outdoor exposure.\n"
                         "- Precautions: Limit intense physical exertion outside.")
-
