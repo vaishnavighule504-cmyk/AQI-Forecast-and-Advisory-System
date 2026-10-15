@@ -12,18 +12,21 @@
       </div>
 
       <!-- Navigation Links -->
-      <nav class="nav-links" [class.mobile-open]="mobileMenuOpen()">
-        <a routerLink="/app/dashboard" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
-          <span class="nav-icon">📊</span> Dashboard
+      <nav id="primary-navigation" class="nav-links" [class.mobile-open]="mobileMenuOpen()" aria-label="Primary navigation">
+        <a routerLink="/app/dashboard" routerLinkActive="active-nav" aria-label="Dashboard" title="Dashboard" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Dashboard</span>
         </a>
-        <a routerLink="/app/compare" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
-          <span class="nav-icon">⚖️</span> Compare
+        <a routerLink="/app/compare" routerLinkActive="active-nav" aria-label="Compare cities" title="Compare cities" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">⚖️</span><span class="nav-label">Compare</span>
         </a>
-        <a routerLink="/app/alerts" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
-          <span class="nav-icon">🔔</span> Alerts
+        <a routerLink="/app/alerts" routerLinkActive="active-nav" aria-label="Alerts" title="Alerts" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">🔔</span><span class="nav-label">Alerts</span> @if (unreadAlerts > 0) { <span class="alert-count">{{ unreadAlerts }}</span> }
         </a>
-        <a routerLink="/app/model" routerLinkActive="active-nav" (click)="mobileMenuOpen.set(false)">
-          <span class="nav-icon">🤖</span> Model
+        <a routerLink="/app/model" routerLinkActive="active-nav" aria-label="Forecast model" title="Forecast model" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">📈</span><span class="nav-label">Model</span>
+        </a>
+        <a routerLink="/onboarding" routerLinkActive="active-nav" aria-label="Edit profile" title="Edit profile" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">⚙️</span><span class="nav-label">Profile</span>
         </a>
       </nav>
 
@@ -32,24 +35,24 @@
         <!-- City Selector -->
         <div class="city-selector-wrapper" title="Quick City Selector">
           <span class="city-icon">📍</span>
-          <select [value]="selectedCity()" (change)="onCityChange($event)" class="city-select">
+          <select [value]="selectedCity()" (change)="onCityChange($event)" class="city-select" aria-label="Select city">
             <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
           </select>
         </div>
 
         <!-- Theme Toggle -->
-        <button class="theme-toggle-btn" (click)="toggleTheme()" title="Toggle Theme">
-          <span>{{ isDarkMode() ? '☀️ Light' : '🌙 Dark' }}</span>
+        <button class="theme-toggle-btn" (click)="toggleTheme()" title="Toggle theme" [attr.aria-label]="isDarkMode() ? 'Switch to light theme' : 'Switch to dark theme'">
+          <span class="action-icon" aria-hidden="true">{{ isDarkMode() ? '☀️' : '🌙' }}</span><span class="action-label">{{ isDarkMode() ? 'Light' : 'Dark' }}</span>
         </button>
 
         <!-- Logout Button -->
-        <button class="logout-btn" (click)="onLogout()" title="Logout">
-          <span>Sign Out</span>
+        <button class="logout-btn" (click)="onLogout()" title="Sign out" aria-label="Sign out">
+          <span class="action-icon" aria-hidden="true">↪</span><span class="action-label">Sign Out</span>
         </button>
 
         <!-- Mobile Toggle Button -->
-        <button class="mobile-toggle" (click)="toggleMobileMenu()">
-          <span>☰</span>
+        <button class="mobile-toggle" type="button" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-controls="primary-navigation" aria-label="Toggle navigation menu">
+          <span aria-hidden="true">☰</span>
         </button>
       </div>
     </div>

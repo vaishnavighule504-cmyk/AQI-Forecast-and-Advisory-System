@@ -3,36 +3,36 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 
 export interface ForecastDetails {
-  date: string;
-  value: number;
-  method: string;
-  category: string;
-  color: string;
-  static_advisory: string;
-  advisory: string;
-  profile: string;
+  date?: string | null;
+  value?: number | null;
+  method?: string | null;
+  category?: string | null;
+  color?: string | null;
+  static_advisory?: string | null;
+  advisory?: string | null;
+  profile?: string | null;
 }
 
 export interface ForecastResponse {
-  city: string;
-  latest_reading_date: string;
-  latest_reading_aqi: number;
-  forecast_1d: ForecastDetails;
-  forecast_2d: ForecastDetails;
-  explanation: string;
+  city?: string | null;
+  latest_reading_date?: string | null;
+  latest_reading_aqi?: number | null;
+  forecast_1d?: ForecastDetails | null;
+  forecast_2d?: ForecastDetails | null;
+  explanation?: string | null;
   // Backwards compatibility keys
-  predicted_aqi: number;
-  forecast_date: string;
-  category: string;
-  color: string;
-  advisory: string;
-  profile: string;
+  predicted_aqi?: number | null;
+  forecast_date?: string | null;
+  category?: string | null;
+  color?: string | null;
+  advisory?: string | null;
+  profile?: string | null;
 }
 
 export interface StationDetails {
   name: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   aqi: number | null;
   pollutants: {
     pm25?: number | null;
@@ -46,21 +46,21 @@ export interface StationDetails {
 }
 
 export interface LiveAqiResponse {
-  live: boolean;
-  city: string;
-  date: string;
-  aqi: number | null;
-  pollutants: {
-    pm25: number | null;
-    pm10: number | null;
-    no2: number | null;
-    so2: number | null;
-    co: number | null;
-    o3: number | null;
-    nh3: number | null;
-  };
-  derived_method: string;
-  stations: StationDetails[];
+  live?: boolean;
+  city?: string | null;
+  date?: string | null;
+  aqi?: number | null;
+  pollutants?: {
+    pm25?: number | null;
+    pm10?: number | null;
+    no2?: number | null;
+    so2?: number | null;
+    co?: number | null;
+    o3?: number | null;
+    nh3?: number | null;
+  } | null;
+  derived_method?: string | null;
+  stations?: StationDetails[] | null;
 }
 
 @Injectable({

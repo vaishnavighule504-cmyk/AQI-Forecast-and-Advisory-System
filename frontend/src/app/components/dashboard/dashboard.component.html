@@ -3,24 +3,23 @@
   <div class="hero-panels-overlay">
     <div class="hero-left-panel">
       <div class="hl-city">{{ selectedCity() }}</div>
-      <div class="hl-aqi tabular-nums">{{ getCurrentAQI() }}</div>
+      <div class="hl-aqi tabular-nums">{{ getCurrentAQI() ?? 'Unavailable' }}</div>
       <div class="hl-band" [ngClass]="getAQIClass(getCurrentAQI())">{{ getAQICategory(getCurrentAQI()) }}</div>
-      <div class="hl-time">Updated: {{ liveAqiData()?.date || forecastData()?.latest_reading_date || 'Just now' }}</div>
-      <div class="hl-badge" [class.live-active]="liveAqiData()?.live">
-        {{ liveAqiData()?.live ? 'LIVE' : 'STORED' }}
-      </div>
+      <div class="hl-time">Updated: {{ getCurrentDate() || 'Timestamp unavailable' }}</div>
+      <app-data-status-badge [status]="getCurrentStatus()"></app-data-status-badge>
+      @if (getCurrentAQI() === null && !isLoading()) { <button type="button" class="data-retry" (click)="fetchForecast()">Retry AQI</button> }
     </div>
     
     <div class="hero-right-panel">
-      @let topTrend = getTrendInfo();
       <div class="forecast-strip-item">
         <span class="fs-label">Tomorrow</span>
-        <span class="fs-val">{{ topTrend.tomorrowAqi }}</span>
+        <span class="fs-val">{{ forecastVM()?.day1?.value ?? 'Forecast unavailable' }}</span>
       </div>
       <div class="forecast-strip-item">
         <span class="fs-label">Day After</span>
-        <span class="fs-val">{{ topTrend.dayAfterAqi }}</span>
+        <span class="fs-val">{{ forecastVM()?.day2?.value ?? 'Forecast unavailable' }}</span>
       </div>
+      <app-data-status-badge [status]="forecastStatus()"></app-data-status-badge>
     </div>
   </div>
 
@@ -33,7 +32,10 @@
       <span class="clinical-icon">🍃</span>
       <h1>SaansCast Dashboard</h1>
     </div>
-    <p class="subtitle">Know tomorrow's air today. Real-time CPCB sub-index tracking, machine learning predictions, and clinical health advisories.</p>
+    <p class="subtitle">Know tomorrow's air today. AQI forecasts and personalized air-quality guidance.</p>
+    <button type="button" class="profile-chip" (click)="editProfile()">
+      {{ selectedCity() }} · {{ profileChipSensitivity }} · outdoors {{ savedProfile()?.outdoorTimes?.join(', ') || 'not set' }}
+    </button>
   </header>
 
   <!-- PHASE 2A: DASHBOARD HERO SECTION -->
@@ -45,12 +47,10 @@
       <div class="city-location-title">
         <span class="location-pin">📍</span>
         <h2>{{ selectedCity() }}</h2>
-        <span class="status-indicator-tag" [class.live-active]="liveAqiData()?.live">
-          {{ liveAqiData()?.live ? '● LIVE TELEMETRY' : '● DEMO MODE' }}
-        </span>
+        <app-data-status-badge [status]="getCurrentStatus()"></app-data-status-badge>
       </div>
       <div class="last-updated-text">
-        Last updated: {{ liveAqiData()?.date || forecastData()?.latest_reading_date || 'Just now' }}
+        Updated: {{ getCurrentDate() || 'Timestamp unavailable' }}
       </div>
     </div>
 
@@ -58,7 +58,7 @@
       <!-- Large AQI Metric Card -->
       <div class="hero-aqi-card">
         <div class="aqi-hero-number-wrap">
-          <span class="hero-aqi-value">{{ getCurrentAQI() }}</span>
+          <span class="hero-aqi-value">{{ getCurrentAQI() ?? 'Unavailable' }}</span>
           <span class="hero-aqi-unit">AQI</span>
         </div>
         <div class="category-pill-badge" [ngClass]="getAQIClass(getCurrentAQI())">
@@ -72,10 +72,10 @@
         <div class="preview-card-item">
           <div class="preview-card-label">1-Day Forecast (Tomorrow)</div>
           <div class="preview-card-val-row">
-            <span class="preview-aqi-num">{{ trend.tomorrowAqi }}</span>
-            <span class="trend-badge" [class.worse]="trend.isWorse" [class.better]="!trend.isWorse">
+            @if (forecastVM()?.day1?.value !== null && forecastVM()?.day1?.value !== undefined) { <span class="preview-aqi-num">{{ trend.tomorrowAqi }}</span> } @else { <span>Forecast unavailable</span> }
+            @if (forecastVM()?.day1?.value !== null && forecastVM()?.day1?.value !== undefined && getCurrentAQI() !== null) { <span class="trend-badge" [class.worse]="trend.isWorse" [class.better]="!trend.isWorse">
               {{ trend.arrow }} {{ trend.text }}
-            </span>
+            </span> } @else { <span>Comparison unavailable</span> }
           </div>
           <div class="preview-card-sub">Predicted Air Quality</div>
         </div>
@@ -83,7 +83,7 @@
         <div class="preview-card-item">
           <div class="preview-card-label">2-Day Forecast (Day After)</div>
           <div class="preview-card-val-row">
-            <span class="preview-aqi-num">{{ trend.dayAfterAqi }}</span>
+            @if (forecastVM()?.day2?.value !== null && forecastVM()?.day2?.value !== undefined) { <span class="preview-aqi-num">{{ trend.dayAfterAqi }}</span> } @else { <span>Forecast unavailable</span> }
           </div>
           <div class="preview-card-sub">Extended Outlook</div>
         </div>
@@ -110,32 +110,22 @@
     </div>
 
     <!-- Compact Weather Strip -->
-    <div class="compact-weather-strip">
-      <div class="weather-item">
-        <span class="weather-icon">🌡️</span>
-        <span class="weather-label">Temp:</span>
-        <span class="weather-val">{{ mockWeather.temp }}</span>
-      </div>
-      <div class="weather-divider">|</div>
-      <div class="weather-item">
-        <span class="weather-icon">💧</span>
-        <span class="weather-label">Humidity:</span>
-        <span class="weather-val">{{ mockWeather.humidity }}</span>
-      </div>
-      <div class="weather-divider">|</div>
-      <div class="weather-item">
-        <span class="weather-icon">💨</span>
-        <span class="weather-label">Wind:</span>
-        <span class="weather-val">{{ mockWeather.wind }}</span>
-      </div>
-      <div class="weather-divider">|</div>
-      <div class="weather-item">
-        <span class="weather-icon">☀️</span>
-        <span class="weather-label">UV Index:</span>
-        <span class="weather-val">{{ mockWeather.uvIndex }}</span>
-      </div>
-    </div>
+    <div class="compact-weather-strip">Weather data unavailable; no weather source is connected.</div>
   </section>
+
+  <app-air-plan
+    [city]="selectedCity()"
+    [currentAqi]="getAirPlanAqi()"
+    [band]="getAirPlanBand()"
+    [dataStatus]="getCurrentStatus()"
+    [forecastStatus]="forecastStatus()"
+    [day1]="forecastVM()?.day1 || null"
+    [day2]="forecastVM()?.day2 || null"
+    [forecastIsDemo]="forecastIsDemo()"
+    [pollutants]="liveVM()?.pollutants || null"
+    [profile]="selectedProfile()"
+    [savedPreference]="savedProfile()">
+  </app-air-plan>
 
   <!-- PHASE 2B: DASHBOARD CONTENT GRID -->
   <div class="dashboard-content-grid">
@@ -149,18 +139,22 @@
           <h3>Primary Pollutant Breakdown</h3>
         </div>
         <div class="pollutant-grid">
-          @for (p of getPollutants(); track p.name) {
+        <app-data-status-badge [status]="liveStatus()"></app-data-status-badge>
+        @if (!hasPollutants()) { <p>{{ liveStatus() === 'loading' ? 'Loading pollutant measurements…' : (liveErrorMessage() || 'Pollutant measurements unavailable.') }}</p>
+          @if (liveStatus() !== 'loading') { <button type="button" class="data-retry" (click)="fetchForecast()">Retry</button> }
+        }
+        @for (p of getPollutants(); track p.name) {
             <div class="pollutant-pill" [class.dominant-pollutant]="p.isDominant">
               <div class="p-header">
                 <span class="p-name">{{ p.name }}</span>
                 @if (p.isDominant) { <span class="dominant-tag">★ DOMINANT</span> }
               </div>
               <div class="p-value-row">
-                <span class="p-val">{{ p.value }}</span>
+                <span class="p-val">{{ p.value ?? 'Unavailable' }}</span>
                 <span class="p-unit">{{ p.unit }}</span>
               </div>
               <div class="p-progress-bg">
-                <div class="p-progress-fill" [style.width.%]="(p.value / p.max) * 100"></div>
+                @if (p.value !== null) { <div class="p-progress-fill" [style.width.%]="(p.value / p.max) * 100"></div> }
               </div>
             </div>
           }
@@ -174,33 +168,46 @@
           <h3>AQI Trajectory & ML Forecast</h3>
         </div>
         <div class="trend-chart-wrap">
-          @let trendInfo = getTrendInfo();
           @let currentAqi = getCurrentAQI();
-          
-          <svg viewBox="0 0 300 120" class="svg-trend-chart">
-            <!-- Grid Lines -->
-            <line x1="0" y1="20" x2="300" y2="20" class="grid-line" />
-            <line x1="0" y1="50" x2="300" y2="50" class="grid-line" />
-            <line x1="0" y1="80" x2="300" y2="80" class="grid-line" />
-            
-            <!-- Lines -->
-            <polyline fill="none" class="hist-line" stroke="#94a3b8" stroke-width="3"
-                      [attr.points]="'40,80 ' + '150,' + (100 - (currentAqi/5))"/>
-            <polyline fill="none" class="forecast-line" stroke="#10b981" stroke-width="3" stroke-dasharray="5,4"
-                      [attr.points]="'150,' + (100 - (currentAqi/5)) + ' 220,' + (100 - (trendInfo.tomorrowAqi/5)) + ' 280,' + (100 - (trendInfo.dayAfterAqi/5))"/>
-            
-            <!-- Points -->
-            <circle cx="40" cy="80" r="4" fill="#64748b" />
-            <circle cx="150" [attr.cy]="100 - (currentAqi/5)" r="5" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
-            <circle cx="220" [attr.cy]="100 - (trendInfo.tomorrowAqi/5)" r="5" fill="#10b981" />
-            <circle cx="280" [attr.cy]="100 - (trendInfo.dayAfterAqi/5)" r="5" fill="#10b981" />
-            
-            <!-- Labels -->
-            <text x="40" y="110" class="chart-label">Yesterday</text>
-            <text x="150" y="110" class="chart-label chart-label-active">Today</text>
-            <text x="220" y="110" class="chart-label">+1D Forecast</text>
-            <text x="280" y="110" class="chart-label">+2D</text>
-          </svg>
+          @let tomorrowAqi = forecastVM()?.day1?.value ?? null;
+          @let dayAfterAqi = forecastVM()?.day2?.value ?? null;
+          @if (currentAqi === null && tomorrowAqi === null && dayAfterAqi === null) {
+            <div class="chart-empty" role="status">
+              @if (isLoading()) { <p>Loading AQI readings and forecasts…</p> }
+              @else { <p>No observed or forecast AQI values are available to chart.</p><button type="button" (click)="fetchForecast()">Retry</button> }
+            </div>
+          } @else {
+            <svg viewBox="0 0 300 130" class="svg-trend-chart" role="img" aria-label="AQI readings and available forecast values. Forecast points are shown separately from the current reading.">
+              <line x1="25" y1="20" x2="285" y2="20" class="grid-line" />
+              <line x1="25" y1="55" x2="285" y2="55" class="grid-line" />
+              <line x1="25" y1="90" x2="285" y2="90" class="grid-line" />
+              @if (currentAqi !== null && tomorrowAqi !== null) {
+                <line x1="65" [attr.y1]="chartY(currentAqi)" x2="165" [attr.y2]="chartY(tomorrowAqi)" class="forecast-line" />
+              }
+              @if (tomorrowAqi !== null && dayAfterAqi !== null) {
+                <line x1="165" [attr.y1]="chartY(tomorrowAqi)" x2="265" [attr.y2]="chartY(dayAfterAqi)" class="forecast-line" />
+              }
+              @if (currentAqi !== null) {
+                <circle cx="65" [attr.cy]="chartY(currentAqi)" r="5" class="observed-point"><title>Latest observed AQI {{ currentAqi }} · {{ getAQICategory(currentAqi) }} · {{ getCurrentDate() || 'date unavailable' }} · {{ getCurrentStatus() }}</title></circle>
+              }
+              @if (tomorrowAqi !== null) {
+                <circle cx="165" [attr.cy]="chartY(tomorrowAqi)" r="5" class="forecast-point"><title>Tomorrow AQI {{ tomorrowAqi }} · {{ forecastVM()?.day1?.category || getAQICategory(tomorrowAqi) }} · {{ forecastVM()?.day1?.date || 'date unavailable' }} · {{ forecastStatus() }}</title></circle>
+              }
+              @if (dayAfterAqi !== null) {
+                <circle cx="265" [attr.cy]="chartY(dayAfterAqi)" r="5" class="forecast-point"><title>Day-after AQI {{ dayAfterAqi }} · {{ forecastVM()?.day2?.category || getAQICategory(dayAfterAqi) }} · {{ forecastVM()?.day2?.date || 'date unavailable' }} · {{ forecastStatus() }}</title></circle>
+              }
+              <text x="65" y="115" text-anchor="middle" class="chart-label">Observed</text>
+              <text x="165" y="115" text-anchor="middle" class="chart-label">Tomorrow</text>
+              <text x="265" y="115" text-anchor="middle" class="chart-label">Day after</text>
+            </svg>
+            <div class="chart-legend">
+              <span><i class="legend-observed"></i>Latest observed reading · AQI</span>
+              <span><i class="legend-forecast"></i>Predicted · AQI</span>
+              <app-data-status-badge [status]="getCurrentStatus()"></app-data-status-badge>
+              <app-data-status-badge [status]="forecastStatus()"></app-data-status-badge>
+            </div>
+            <small class="history-unavailable">Historical observations are not included in this chart.</small>
+          }
         </div>
       </div>
       
@@ -209,12 +216,15 @@
         <div class="card-header-clean">
           <span class="icon">🏭</span>
           <h3>Active Telemetry Stations</h3>
+          <app-data-status-badge [status]="liveStatus()"></app-data-status-badge>
         </div>
         <div class="stations-list">
+          @if (liveStatus() === 'loading') { <p role="status">Loading station readings…</p> }
+          @else if (!getActiveStations().length) { <p>{{ liveErrorMessage() || 'No station readings are available for this response.' }}</p><button type="button" (click)="fetchForecast()">Retry</button> }
           @for (station of getActiveStations(); track station.name) {
             <div class="station-row">
               <span class="st-name">📍 {{ station.name }}</span>
-              <span class="st-aqi" [ngClass]="getAQIClass(station.aqi)">{{ station.aqi }} AQI</span>
+              <span class="st-aqi" [ngClass]="getAQIClass(station.aqi)">{{ station.aqi === null ? 'AQI unavailable' : station.aqi + ' AQI' }}</span>
             </div>
           }
         </div>
@@ -229,7 +239,8 @@
       <div class="content-card advisory-card">
         <div class="card-header-clean">
           <span class="icon">🩺</span>
-          <h3>Clinical Health Advisory</h3>
+          <h3>Personalized Health Guidance</h3>
+          <app-data-status-badge [status]="forecastStatus()"></app-data-status-badge>
         </div>
         
         <!-- Profile Segmented Control -->
@@ -245,17 +256,18 @@
         
         <div class="advisory-body">
           @if (isLoading()) {
-            <div class="loader-inline">Compiling clinical guidelines...</div>
-          } @else if (forecastData(); as data) {
+            <div class="loader-inline">Loading available guidance…</div>
+          } @else if (errorMessage()) { <p>{{ errorMessage() }} <button type="button" (click)="fetchForecast()">Retry</button></p> } @else if (forecastVM()?.day1?.advisory) {
             <div class="adv-section">
-              <h4>Prescription for {{ data.profile }} (Next 24h)</h4>
+              <h4>Suggested actions for {{ forecastVM()?.day1?.profile || selectedProfile() }} (forecast period)</h4>
+              <p class="guidance-disclaimer">General air-quality guidance based on available forecast/profile data. This is not professional medical advice.</p>
               <ul class="clean-bullet-list">
-                @for (bullet of getAdvisoryBullets(data.forecast_1d.advisory); track bullet) {
+                @for (bullet of getAdvisoryBullets(forecastVM()?.day1?.advisory || ''); track bullet) {
                   <li><span class="bullet-dot"></span> {{ bullet }}</li>
                 }
               </ul>
             </div>
-          }
+          } @else { <p>Forecast guidance unavailable. Guidance is based on available data and is not professional medical advice.</p> }
         </div>
       </div>
 
@@ -263,16 +275,15 @@
       <div class="content-card">
         <div class="card-header-clean">
           <span class="icon">📊</span>
-          <h3>National City Rankings (AQI)</h3>
+          <h3>Selected City AQI</h3>
         </div>
-        <p class="section-help-text">Select a leading metropolis to switch regions.</p>
+        <p class="section-help-text">Only the selected city's reading is loaded; other city values are not inferred.</p>
         <div class="ranking-list">
+          @if (liveStatus() === 'loading' && !getRankedCities().length) { <p role="status">Loading city reading…</p> }
+          @else if (!getRankedCities().length) { <p>No city AQI reading is available.</p><button type="button" (click)="fetchForecast()">Retry</button> }
           @for (city of getRankedCities(); track city.name; let i = $index) {
-            <div class="ranking-item" 
-                 [class.active-rank]="city.name === selectedCity()"
-                 (click)="onCityChange(city.name)">
+            <div class="ranking-item active-rank">
               <div class="rank-left">
-                <span class="rank-num">#{{ i + 1 }}</span>
                 <span class="rank-name">{{ city.name }}</span>
               </div>
               <div class="rank-right">
@@ -280,6 +291,7 @@
                 <span class="rank-aqi-pill" [ngClass]="city.colorClass">
                   {{ city.aqi }}
                 </span>
+                <app-data-status-badge [status]="city.status"></app-data-status-badge>
               </div>
             </div>
           }
@@ -290,49 +302,4 @@
   </div>
 </div>
 
-<!-- ==============================================
-     SAANSCAST CHATBOT
-     ============================================== -->
-<div class="chatbot-container">
-  
-  @if (isChatOpen()) {
-    <div class="chatbot-panel animate-slide-up">
-      <div class="chat-header">
-        <div class="header-left">
-          <span class="chat-icon">🍃</span>
-          <h4>SaansCast Intel</h4>
-        </div>
-        <button class="close-chat-btn" (click)="toggleChat()">×</button>
-      </div>
-
-      <div class="chat-body" #chatScroll>
-        @for (msg of chatMessages(); track msg) {
-          <div class="chat-msg" [class.msg-user]="msg.role === 'user'" [class.msg-bot]="msg.role === 'bot'">
-            <div class="msg-bubble">{{ msg.text }}</div>
-          </div>
-        }
-      </div>
-
-      <div class="chat-starter-chips">
-        <button class="chip-btn" (click)="sendChatMessage('What is today\'s AQI?')">Today's AQI?</button>
-        <button class="chip-btn" (click)="sendChatMessage('Which pollutant is dominant?')">Dominant Pollutant?</button>
-        <button class="chip-btn" (click)="sendChatMessage('Will air quality improve tomorrow?')">Forecast tomorrow?</button>
-        <button class="chip-btn" (click)="sendChatMessage('What should I do today?')">Health Precautions?</button>
-      </div>
-
-      <div class="chat-input-area">
-        <input type="text" placeholder="Ask about air quality..." 
-               [ngModel]="chatInput()" (ngModelChange)="chatInput.set($event)" 
-               (keyup.enter)="sendChatMessage(chatInput()); chatInput.set('')">
-        <button class="send-btn" 
-                (click)="sendChatMessage(chatInput()); chatInput.set('')">
-          ➤
-        </button>
-      </div>
-    </div>
-  }
-
-  <button class="chatbot-fab" (click)="toggleChat()" [class.fab-active]="isChatOpen()">
-    <span class="fab-icon">💬</span>
-  </button>
-</div>
+<app-assistant [context]="getAssistantContext()"></app-assistant>

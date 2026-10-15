@@ -10,6 +10,7 @@
 
     <h2 class="auth-heading">Sign In</h2>
     <p class="auth-subtext">Access real-time air quality forecasts and personalized advisories.</p>
+    <p class="auth-subtext">Local demo access only; this is not secure account authentication. Register in this tab to sign in.</p>
 
     <div *ngIf="errorMessage()" class="error-banner">
       {{ errorMessage() }}
@@ -24,7 +25,7 @@
           name="username"
           [ngModel]="username()" 
           (ngModelChange)="username.set($event)"
-          placeholder="e.g. demouser@saanscast.org" 
+          placeholder="Enter your username or email" 
           required
         />
       </div>

@@ -10,10 +10,10 @@ import { CommonModule } from '@angular/common';
       <div class="placeholder-card">
         <div class="icon">⚖️</div>
         <h2>Multi-City AQI Compare</h2>
-        <p class="subtitle">Side-by-side air quality index and pollutant analytics across pilot cities.</p>
-        <div class="status-badge">Compare Module</div>
+        <p class="subtitle">Side-by-side AQI and pollutant analysis is not connected to backend data yet.</p>
+        <div class="status-badge">No comparison data loaded</div>
         <h2>Regional Analysis</h2>
-        <p>Compare AQI, dominant pollutants, and model forecasts across multiple cities in real-time.</p>
+        <p>Choose a city in the dashboard to view its available reading. No multi-city values are inferred here.</p>
       </div>
     </div>
   `,

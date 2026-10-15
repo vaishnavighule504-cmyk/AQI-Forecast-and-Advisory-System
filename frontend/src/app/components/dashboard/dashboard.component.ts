@@ -1,28 +1,42 @@
 import { Component, signal, inject, PLATFORM_ID, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { AqiService, ForecastResponse, LiveAqiResponse, StationDetails } from '../../services/aqi.service';
+import { ForecastVM, LiveVM, toForecastVM, toLiveVM, isExplicitDemoMode } from '../../services/aqi-view-models';
+import { DataStatusBadgeComponent } from '../data-status-badge/data-status-badge.component';
+import { ProfileService, UserProfile } from '../../services/profile.service';
+import { Router } from '@angular/router';
+import { AirPlanComponent } from '../air-plan/air-plan.component';
+import { AssistantComponent } from '../assistant/assistant.component';
+import { AssistantContext } from '../../services/chat-provider';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, DataStatusBadgeComponent, AirPlanComponent, AssistantComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements AfterViewInit, OnDestroy {
   private aqiService = inject(AqiService);
   private platformId = inject(PLATFORM_ID);
+  private profileService = inject(ProfileService);
+  private router = inject(Router);
 
   // UI Signals
-  selectedCity = signal<string>('Delhi');
-  selectedProfile = signal<string>('General Public');
+  selectedCity = signal<string>(this.profileService.load()?.city || 'Delhi');
+  selectedProfile = signal<string>(this.profileService.backendProfile(this.profileService.load()?.sensitivity || 'general'));
+  savedProfile = signal<UserProfile | null>(this.profileService.load());
 
   // UI Signals
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
-  forecastData = signal<ForecastResponse | null>(null);
-  liveAqiData = signal<LiveAqiResponse | null>(null);
+  liveErrorMessage = signal<string | null>(null);
+  liveStatus = signal<import('../../services/aqi-view-models').DataStatus>('loading');
+  forecastStatus = signal<import('../../services/aqi-view-models').DataStatus>('loading');
+  forecastVM = signal<ForecastVM | null>(null);
+  liveVM = signal<LiveVM | null>(null);
+  demoMode = signal<boolean>(false);
+  forecastIsDemo = signal<boolean>(false);
 
   private stationMarkers: any[] = [];
   private forecastSub: any;
@@ -34,6 +48,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
   // Map variables
   private map: any;
+  private leaflet: any;
   private mapMarkers: { [key: string]: any } = {};
   
   private cityCoords: { [key: string]: [number, number] } = {
@@ -46,21 +61,22 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     'Ahmedabad': [23.0225, 72.5714]
   };
 
-  // Chatbot State
-  isChatOpen = signal<boolean>(false);
-  chatMessages = signal<{role: string, text: string}[]>([]);
-  chatInput = signal<string>('');
-
   ngAfterViewInit() {
-    this.fetchForecast();
-    if (isPlatformBrowser(this.platformId)) {
-      this.initMap();
+    if (!isPlatformBrowser(this.platformId)) {
+      this.liveStatus.set('unavailable');
+      this.forecastStatus.set('unavailable');
+      this.isLoading.set(false);
+      return;
     }
+    this.demoMode.set(isExplicitDemoMode(window.location.search));
+    this.fetchForecast();
+    this.initMap();
   }
 
   private async initMap() {
     try {
       const L = await import('leaflet');
+      this.leaflet = L;
       
       this.map = L.map('aqi-phase3-map', {
         center: [20.5937, 78.9629],
@@ -77,8 +93,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       Object.keys(this.cityCoords).forEach((city) => {
         const coords = this.cityCoords[city];
 
-        let aqiVal = 0;
-        let colorClass = 'aqi-moderate';
+        let aqiVal: number | null = null;
+        let colorClass = 'aqi-unavailable';
         const allCities = this.getRankedCities();
         const cityData = allCities.find(c => c.name === city);
         if (cityData) {
@@ -88,7 +104,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
         const icon = L.divIcon({
           className: 'custom-map-marker',
-          html: `<div class="city-marker-badge ${colorClass}" id="marker-${city.toLowerCase()}">${aqiVal}</div>`,
+          html: `<div class="city-marker-badge ${colorClass}" id="marker-${city.toLowerCase()}">${aqiVal === null ? '–' : aqiVal}</div>`,
           iconSize: [30, 30],
           iconAnchor: [15, 15]
         });
@@ -107,6 +123,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       // Auto-focus initial city
       setTimeout(() => {
         this.map.invalidateSize();
+        this.updateMapMarkers();
         this.focusCityMap(this.selectedCity());
       }, 500);
 
@@ -132,49 +149,31 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  toggleChat() {
-    this.isChatOpen.update(v => !v);
-    if (this.isChatOpen() && this.chatMessages().length === 0) {
-      this.chatMessages.set([
-        { role: 'bot', text: 'Hi! I am the SaansCast Assistant. How can I help you regarding air quality today?' }
-      ]);
+  private updateMapMarkers(): void {
+    if (!this.leaflet) return;
+    for (const city of Object.keys(this.mapMarkers)) {
+      const cityData = this.getRankedCities().find(item => item.name === city);
+      const value = cityData?.aqi ?? null;
+      const icon = this.leaflet.divIcon({
+        className: 'custom-map-marker',
+        html: `<div class="city-marker-badge ${cityData?.colorClass || 'aqi-unavailable'}" id="marker-${city.toLowerCase()}">${value === null ? '–' : value}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      });
+      this.mapMarkers[city].setIcon(icon);
     }
-  }
-
-  sendChatMessage(message: string) {
-    if (!message.trim()) return;
-    
-    // Add user message
-    this.chatMessages.update(msgs => [...msgs, { role: 'user', text: message }]);
-    
-    const contextCity = this.selectedCity();
-    const contextAqi = this.getCurrentAQI();
-    
-    setTimeout(() => {
-      let reply = "I'm not sure about that.";
-      const lower = message.toLowerCase();
-      if (lower.includes('aqi') || lower.includes('today')) {
-        reply = `Today's AQI in ${contextCity} is ${contextAqi}.`;
-      } else if (lower.includes('improve') || lower.includes('tomorrow')) {
-        const trend = this.getTrendInfo();
-        reply = trend.isWorse ? `Unfortunately, it is worsening. The forecasted AQI is ${trend.tomorrowAqi}.` : `Yes! The forecast looks better at ${trend.tomorrowAqi} AQI.`;
-      } else if (lower.includes('pollutant') || lower.includes('dominant')) {
-         const p = this.getPollutants().find(x => x.isDominant);
-         reply = `The dominant pollutant currently is ${p?.name || 'PM2.5'}.`;
-      } else if (lower.includes('do today') || lower.includes('should i do')) {
-         reply = `Given the ${this.getAQICategory(contextAqi)} air, we suggest taking precautions. Check the Clinical Advisory tab!`;
-      } else {
-         reply = "Currently, I can answer basic questions about today's AQI, forecasts, distinct pollutants, and health advisory tips based on our data.";
-      }
-      
-      this.chatMessages.update(msgs => [...msgs, { role: 'bot', text: reply }]);
-    }, 600);
   }
 
   onCityChange(city: string) {
     this.selectedCity.set(city);
     this.fetchForecast();
     this.focusCityMap(city);
+  }
+
+  editProfile(): void { this.router.navigate(['/onboarding']); }
+
+  get profileChipSensitivity(): string {
+    return this.savedProfile()?.sensitivity === 'child' ? 'Sensitive-group guidance' : this.selectedProfile();
   }
 
 
@@ -195,8 +194,28 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
   fetchForecast() {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    this.liveErrorMessage.set(null);
+    this.liveStatus.set('loading');
+    this.forecastStatus.set('loading');
+    this.liveVM.set(null);
+    this.forecastVM.set(null);
+    this.forecastIsDemo.set(false);
+    this.updateMapMarkers();
 
     const city = this.selectedCity();
+
+    if (this.demoMode()) {
+      const demoLive = this.generateMockLiveAqi(city);
+      this.liveVM.set({ ...toLiveVM(demoLive), dataStatus: 'demo' });
+      this.liveStatus.set('demo');
+      const demoForecast = this.generateMockForecast(city, this.selectedProfile());
+      this.forecastVM.set(toForecastVM(demoForecast, 'demo'));
+      this.forecastStatus.set('demo');
+      this.forecastIsDemo.set(true);
+      this.isLoading.set(false);
+      this.updateMapMarkers();
+      return;
+    }
 
     // Prevent race conditions and memory leaks by unsubscribing outdated active requests
     if (this.liveSub) {
@@ -209,24 +228,37 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     // 1. Fetch live telemetry data
     this.liveSub = this.aqiService.getLiveAqi(city).subscribe({
       next: (liveRes) => {
-        this.liveAqiData.set(liveRes);
+        const viewModel = toLiveVM(liveRes);
+        this.liveStatus.set(viewModel.dataStatus);
+        this.liveVM.set(viewModel);
+        if (viewModel.dataStatus === 'unavailable') this.liveErrorMessage.set('No usable current AQI, pollutant, or station data was returned.');
+        this.updateMapMarkers();
       },
       error: (err) => {
-        console.warn("Failed fetching live telemetry, relying on local mock fallback.");
-        this.liveAqiData.set(this.generateMockLiveAqi(city));
+        console.warn('Failed fetching live telemetry.', err);
+        this.liveStatus.set('unavailable');
+        this.liveErrorMessage.set('Current AQI data is unavailable. Retry to try again.');
+        this.updateMapMarkers();
       }
     });
 
     // 2. Fetch ML modeling forecasts
     this.forecastSub = this.aqiService.getForecast(city, this.selectedProfile()).subscribe({
       next: (response) => {
-        this.forecastData.set(response);
+        const viewModel = toForecastVM(response, 'backend');
+        this.forecastVM.set(viewModel);
+        this.forecastStatus.set(viewModel.dataStatus);
+        if (viewModel.dataStatus === 'unavailable') this.errorMessage.set('The forecast response contained no usable reading or forecast values.');
         this.isLoading.set(false);
+        this.updateMapMarkers();
       },
       error: (err) => {
-        console.warn("Forecasting API unavailable. Initializing mock fallback.");
-        this.forecastData.set(this.generateMockForecast(city, this.selectedProfile()));
+        console.warn('Forecasting API unavailable.', err);
+        this.forecastStatus.set('unavailable');
+        this.forecastVM.set(null);
+        this.errorMessage.set('Forecast data is unavailable. Retry to try again.');
         this.isLoading.set(false);
+        this.updateMapMarkers();
       }
     });
   }
@@ -255,12 +287,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         nh3: 4
       },
       derived_method: 'Fallback Mock Data',
-      stations: [
-        { name: 'City Center Monitor', latitude: 0, longitude: 0, aqi: aqi + 15, pollutants: {} },
-        { name: 'Industrial Hub', latitude: 0, longitude: 0, aqi: Math.min(aqi + 42, 500), pollutants: {} },
-        { name: 'Residential South', latitude: 0, longitude: 0, aqi: Math.max(aqi - 25, 0), pollutants: {} },
-        { name: 'Highway Junction', latitude: 0, longitude: 0, aqi: Math.min(aqi + 60, 500), pollutants: {} }
-      ]
+      stations: []
     };
   }
 
@@ -303,7 +330,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     };
   }
 
-  getAQICategory(aqi: number): string {
+  getAQICategory(aqi: number | null): string {
+    if (aqi === null) return 'Unavailable';
     if (aqi <= 50) return 'Good';
     if (aqi <= 100) return 'Satisfactory';
     if (aqi <= 200) return 'Moderate';
@@ -312,7 +340,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     return 'Severe';
   }
 
-  getAQIClass(aqi: number): string {
+  getAQIClass(aqi: number | null): string {
+    if (aqi === null) return 'aqi-unavailable';
     if (aqi <= 50) return 'aqi-good';
     if (aqi <= 100) return 'aqi-satisfactory';
     if (aqi <= 200) return 'aqi-moderate';
@@ -335,13 +364,6 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
   }
 
   // Phase 2A Dashboard Hero Helper Methods
-  mockWeather = {
-    temp: '28°C',
-    humidity: '62%',
-    wind: '12 km/h NW',
-    uvIndex: '5 Moderate'
-  };
-
   aqiScaleBands = [
     { name: 'Good', min: 0, max: 50, key: 'good' },
     { name: 'Satisfactory', min: 51, max: 100, key: 'satisfactory' },
@@ -351,23 +373,63 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     { name: 'Severe', min: 401, max: 999, key: 'severe' }
   ];
 
-  getCurrentAQI(): number {
-    const live = this.liveAqiData();
-    if (live && live.aqi !== null && live.aqi !== undefined) {
-      return live.aqi;
-    }
-    const fc = this.forecastData();
-    if (fc && fc.latest_reading_aqi !== null && fc.latest_reading_aqi !== undefined) {
-      return fc.latest_reading_aqi;
-    }
-    return 184; // Demo fallback AQI
+  getCurrentAQI(): number | null {
+    return this.liveVM()?.aqi ?? this.forecastVM()?.latestReadingAqi ?? null;
   }
 
-  getTrendInfo(): { arrow: string; text: string; isWorse: boolean; tomorrowAqi: number; dayAfterAqi: number } {
+  getCurrentStatus(): import('../../services/aqi-view-models').DataStatus {
+    const live = this.liveVM();
+    if (live?.aqi !== null && live?.aqi !== undefined) return live.dataStatus;
+    const forecast = this.forecastVM();
+    if (forecast?.latestReadingAqi !== null && forecast?.latestReadingAqi !== undefined) return forecast.dataStatus;
+    if (this.demoMode()) return 'demo';
+    if (this.liveStatus() === 'loading' || this.forecastStatus() === 'loading') return 'loading';
+    return 'unavailable';
+  }
+
+  getCurrentDate(): string | null {
+    const live = this.liveVM();
+    if (live?.aqi !== null && live?.aqi !== undefined) return live.updatedTime;
+    const forecast = this.forecastVM();
+    if (forecast?.latestReadingAqi !== null && forecast?.latestReadingAqi !== undefined) return forecast.latestReadingDate;
+    return null;
+  }
+
+  getAirPlanAqi(): number | null {
+    return this.liveVM()?.aqi ?? this.forecastVM()?.latestReadingAqi ?? null;
+  }
+
+  getAirPlanBand(): string | null {
+    const aqi = this.getAirPlanAqi();
+    return aqi === null ? null : this.liveVM()?.category || this.getAQICategory(aqi);
+  }
+
+  getAssistantContext(): AssistantContext {
+    const forecast = this.forecastVM();
+    return {
+      city: this.selectedCity(),
+      currentAqi: this.getAirPlanAqi(),
+      band: this.getAirPlanBand(),
+      dataStatus: this.getCurrentStatus(),
+      forecastStatus: this.forecastStatus(),
+      pollutants: this.liveVM()?.pollutants || null,
+      tomorrow: forecast?.day1 ? {
+        value: forecast.day1.value,
+        date: forecast.day1.date,
+        advisory: forecast.day1.advisory
+      } : null,
+      dayAfter: forecast?.day2 ? { value: forecast.day2.value, date: forecast.day2.date } : null,
+      savedProfile: this.savedProfile()
+    };
+  }
+
+  getTrendInfo(): { arrow: string; text: string; isWorse: boolean; tomorrowAqi: number | null; dayAfterAqi: number | null } {
     const current = this.getCurrentAQI();
-    const fc = this.forecastData();
-    const tomorrowAqi = fc?.forecast_1d?.value ?? (current + 8);
-    const dayAfterAqi = fc?.forecast_2d?.value ?? (current - 6);
+    const tomorrowAqi = this.forecastVM()?.day1?.value ?? null;
+    const dayAfterAqi = this.forecastVM()?.day2?.value ?? null;
+    if (current === null || tomorrowAqi === null) {
+      return { arrow: '—', text: 'Forecast unavailable', isWorse: false, tomorrowAqi, dayAfterAqi };
+    }
     const diff = Math.abs(tomorrowAqi - current);
 
     if (tomorrowAqi > current) {
@@ -379,94 +441,56 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  getAtmosphericClass(aqi: number): string {
+  getAtmosphericClass(aqi: number | null): string {
+    if (aqi === null) return 'atmo-unavailable';
     if (aqi <= 100) return 'atmo-good';
     if (aqi <= 200) return 'atmo-moderate';
     return 'atmo-severe';
   }
 
-  isCategoryActive(band: { min: number; max: number }, currentAqi: number): boolean {
-    return currentAqi >= band.min && currentAqi <= band.max;
+  isCategoryActive(band: { min: number; max: number }, currentAqi: number | null): boolean {
+    return currentAqi !== null && currentAqi >= band.min && currentAqi <= band.max;
+  }
+
+  chartY(aqi: number): number {
+    return Math.max(20, Math.min(90, 90 - (Math.max(0, Math.min(500, aqi)) / 500) * 70));
   }
 
   // Phase 2B Helpers
-  getPollutants() {
-    const defaultData = [
-      { name: 'PM2.5', value: 85, unit: 'µg/m³', max: 250 },
-      { name: 'PM10', value: 165, unit: 'µg/m³', max: 400 },
-      { name: 'NO2', value: 42, unit: 'ppb', max: 200 },
-      { name: 'SO2', value: 12, unit: 'ppb', max: 100 },
-      { name: 'CO', value: 0.8, unit: 'ppm', max: 10 },
-      { name: 'O3', value: 55, unit: 'ppb', max: 150 }
+  getPollutants(): Array<{ name: string; key: string; value: number | null; unit: string; max: number; isDominant: boolean }> {
+    const specs = [
+      { name: 'PM2.5', key: 'pm25', unit: 'µg/m³', max: 250 },
+      { name: 'PM10', key: 'pm10', unit: 'µg/m³', max: 400 },
+      { name: 'NO2', key: 'no2', unit: 'ppb', max: 200 },
+      { name: 'SO2', key: 'so2', unit: 'ppb', max: 100 },
+      { name: 'CO', key: 'co', unit: 'ppm', max: 10 },
+      { name: 'O3', key: 'o3', unit: 'ppb', max: 150 }
     ];
-
-    const live = this.liveAqiData();
-    if (live && live.pollutants && live.pollutants.pm25 !== null) {
-      const p = live.pollutants;
-      return [
-        { name: 'PM2.5', value: Math.round(p.pm25 || 0), unit: 'µg/m³', max: 250 },
-        { name: 'PM10', value: Math.round(p.pm10 || 0), unit: 'µg/m³', max: 400 },
-        { name: 'NO2', value: Math.round(p.no2 || 0), unit: 'ppb', max: 200 },
-        { name: 'SO2', value: Math.round(p.so2 || 0), unit: 'ppb', max: 100 },
-        { name: 'CO', value: Math.round(p.co || 0), unit: 'ppm', max: 10 },
-        { name: 'O3', value: Math.round(p.o3 || 0), unit: 'ppb', max: 150 }
-      ].map(item => ({...item, isDominant: item.name === 'PM2.5'}));
-    }
-    
-    // Find dominant in mock
-    let dominantIndex = 0;
-    let maxRatio = 0;
-    defaultData.forEach((d, i) => {
-      const ratio = d.value / d.max;
-      if (ratio > maxRatio) {
-        maxRatio = ratio;
-        dominantIndex = i;
-      }
-    });
-
-    return defaultData.map((d, i) => ({
-      ...d,
-      isDominant: i === dominantIndex
+    const values = this.liveVM()?.pollutants;
+    if (!values || !Object.values(values).some(value => value !== null)) return [];
+    const available = specs.filter(item => values[item.key] !== null && values[item.key] !== undefined);
+    const dominant = available.sort((a, b) => (values[b.key]! / b.max) - (values[a.key]! / a.max))[0]?.key;
+    return specs.map(item => ({
+      ...item,
+      value: values[item.key] === null || values[item.key] === undefined ? null : Math.round(values[item.key]!),
+      isDominant: item.key === dominant
     }));
   }
 
-  getRankedCities() {
-    const mocks: Record<string, { aqi: number, trend: string }> = {
-      'Delhi': { aqi: 245, trend: '↑' },
-      'Mumbai': { aqi: 112, trend: '↓' },
-      'Bengaluru': { aqi: 68, trend: '→' },
-      'Chennai': { aqi: 74, trend: '→' },
-      'Hyderabad': { aqi: 95, trend: '↓' },
-      'Ahmedabad': { aqi: 158, trend: '↑' },
-      'Kolkata': { aqi: 182, trend: '↑' }
-    };
-    
-    // Inject current active city
-    mocks[this.selectedCity()] = { aqi: this.getCurrentAQI(), trend: this.getTrendInfo().arrow };
-
-    return this.cities.map(name => ({
-      name,
-      aqi: mocks[name].aqi,
-      trend: mocks[name].trend,
-      category: this.getAQICategory(mocks[name].aqi),
-      colorClass: this.getAQIClass(mocks[name].aqi)
-    })).sort((a, b) => b.aqi - a.aqi); // High to low
+  hasPollutants(): boolean {
+    const p = this.liveVM()?.pollutants;
+    return !!p && Object.values(p).some(value => value !== null && value !== undefined);
   }
 
-  getActiveStations() {
-    const live = this.liveAqiData();
-    if (live && live.stations && live.stations.length > 0) {
-      return live.stations
-        .filter(s => s.aqi !== null)
-        .map(s => ({ ...s, aqi: s.aqi as number }))
-        .slice(0, 5);
-    }
-    return [
-      { name: 'City Center Monitor', aqi: this.getCurrentAQI() + 15 },
-      { name: 'Industrial Hub', aqi: this.getCurrentAQI() + 42 },
-      { name: 'Residential South', aqi: Math.max(0, this.getCurrentAQI() - 25) },
-      { name: 'Highway Junction', aqi: this.getCurrentAQI() + 60 }
-    ];
+  getRankedCities(): Array<{ name: string; aqi: number; trend: string; category: string; colorClass: string; status: import('../../services/aqi-view-models').DataStatus }> {
+    const aqi = this.getCurrentAQI();
+    if (aqi === null) return [];
+    return [{ name: this.selectedCity(), aqi, trend: this.getTrendInfo().arrow,
+      category: this.getAQICategory(aqi), colorClass: this.getAQIClass(aqi), status: this.getCurrentStatus() }];
+  }
+
+  getActiveStations(): StationDetails[] {
+    return (this.liveVM()?.stations || []).slice(0, 5);
   }
 }
 

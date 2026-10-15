@@ -1,2 +1,142 @@
 /* You can add global styles to this file, and also import other style files */
 @import "leaflet/dist/leaflet.css";
+
+:root {
+  /* Shared neutral UI tokens; CPCB colors are reserved for AQI data below. */
+  --ui-accent: #0f766e;
+  --ui-accent-strong: #115e59;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #f8fafc;
+  --ui-text: #17212f;
+  --ui-text-muted: #475569;
+  --ui-border: #dbe2ea;
+  --ui-radius: 6px;
+  --ui-radius-large: 8px;
+  --ui-hairline: 1px solid var(--ui-border);
+  --ui-font-xs: .75rem;
+  --ui-font-sm: .875rem;
+  --ui-font-base: 1rem;
+  --ui-font-lg: 1.25rem;
+  --ui-font-xl: 1.5rem;
+  --ui-font-display: 2rem;
+  --ui-space-1: .25rem;
+  --ui-space-2: .5rem;
+  --ui-space-3: .75rem;
+  --ui-space-4: 1rem;
+  --ui-space-6: 1.5rem;
+  --ui-space-8: 2rem;
+  --ui-shadow: 0 1px 3px rgb(15 23 42 / 8%);
+  --cpcb-good: #166534;
+  --cpcb-satisfactory: #3f6212;
+  --cpcb-moderate: #854d0e;
+  --cpcb-poor: #9a3412;
+  --cpcb-very-poor: #991b1b;
+  --cpcb-severe: #881337;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: clip; }
+button, input, select, textarea { font: inherit; }
+:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 2px; }
+:where(.hl-aqi, .hero-aqi-value, .preview-aqi-num, .fs-val, .p-val, .st-aqi, .rank-aqi-pill, .aqi-number, .alert-aqi) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Shared component styling keeps the pages visually related without changing layout or behavior. */
+app-login .auth-card, app-register .auth-card,
+app-compare .placeholder-card, app-model .placeholder-card,
+app-onboarding .card,
+app-alerts .settings-card, app-alerts .alert-card, app-alerts .state-card,
+app-alerts .empty-state, app-alerts .error-card,
+app-air-plan .air-plan, app-assistant .assistant-panel {
+  border-radius: var(--ui-radius-large);
+  box-shadow: var(--ui-shadow);
+}
+
+app-air-plan .plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+app-alerts .alerts-page, app-air-plan .air-plan,
+app-compare .placeholder-container, app-model .placeholder-container,
+app-onboarding .onboarding { min-width: 0; max-width: 100%; }
+app-alerts .alert-card, app-air-plan .plan-section, app-assistant .msg-bubble { overflow-wrap: anywhere; }
+app-alerts .settings-card, app-alerts .alert-list { min-width: 0; }
+app-assistant .assistant-panel { max-width: calc(100vw - 2rem); }
+
+/* Shared palette and compact geometry for inline-style components. */
+app-alerts .alerts-page { color: var(--ui-text); }
+app-alerts .settings-card, app-alerts .alert-card, app-alerts .state-card,
+app-alerts .empty-state, app-alerts .error-card,
+app-air-plan .air-plan, app-compare .placeholder-card, app-model .placeholder-card,
+app-onboarding .card, app-assistant .assistant-panel {
+  border: var(--ui-hairline) !important;
+  border-radius: var(--ui-radius-large) !important;
+}
+app-alerts .settings-card, app-alerts .alert-card, app-alerts .state-card,
+app-alerts .empty-state, app-air-plan .air-plan, app-onboarding .card,
+app-compare .placeholder-card, app-model .placeholder-card {
+  box-shadow: var(--ui-shadow) !important;
+}
+app-onboarding .card, app-air-plan .air-plan, app-alerts .settings-card,
+app-alerts .alert-card, app-compare .placeholder-card, app-model .placeholder-card {
+  background-color: var(--ui-surface) !important;
+}
+app-air-plan .why summary { color: var(--ui-accent-strong); }
+
+app-login .auth-card, app-register .auth-card {
+  border: var(--ui-hairline);
+  background: var(--ui-surface);
+}
+app-login .auth-submit-btn, app-register .auth-submit-btn,
+app-onboarding button:not(.secondary), app-alerts .settings-card button,
+app-alerts .alert-actions button:not(.secondary) {
+  background-color: var(--ui-accent);
+}
+app-login .auth-submit-btn:hover, app-register .auth-submit-btn:hover,
+app-onboarding button:not(.secondary):hover, app-alerts .settings-card button:hover {
+  background-color: var(--ui-accent-strong);
+}
+
+/* AQI atmosphere uses the current band class already rendered by the dashboard. */
+app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-good) { background-color: #f2faf5; }
+app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-satisfactory) { background-color: #f7faef; }
+app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-moderate) { background-color: #fffbeb; }
+app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-poor),
+app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-very-poor),
+app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-severe) { background-color: #fff7f4; }
+
+/* Preserve readable neutral surfaces when the shell toggles dark mode. */
+.shell-wrapper.dark-theme app-alerts .settings-card,
+.shell-wrapper.dark-theme app-alerts .alert-card,
+.shell-wrapper.dark-theme app-alerts .state-card,
+.shell-wrapper.dark-theme app-alerts .empty-state,
+.shell-wrapper.dark-theme app-air-plan .air-plan,
+.shell-wrapper.dark-theme app-onboarding .card,
+.shell-wrapper.dark-theme app-assistant .assistant-panel,
+.shell-wrapper.dark-theme app-compare .placeholder-card,
+.shell-wrapper.dark-theme app-model .placeholder-card {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+@media (max-width: 767px) {
+  app-air-plan .plan-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  app-alerts .alerts-page { padding: var(--ui-space-4) var(--ui-space-3) !important; }
+  app-alerts .settings-card { width: 100%; }
+  app-assistant .assistant-container { right: var(--ui-space-3); bottom: var(--ui-space-3); }
+}
+
+@media (max-width: 420px) {
+  app-dashboard .hero-panels-overlay { gap: var(--ui-space-2); padding: var(--ui-space-2); }
+  app-dashboard .hero-left-panel, app-dashboard .hero-right-panel { min-width: 0; max-width: calc(100vw - 1rem); }
+  app-dashboard .dashboard-wrapper { padding-inline: var(--ui-space-3); }
+  app-dashboard .content-card { min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

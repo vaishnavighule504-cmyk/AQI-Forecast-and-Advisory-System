@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ProfileService } from '../../services/profile.service';
 
 @Component({
   selector: 'app-login',
@@ -14,18 +15,16 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private profileService = inject(ProfileService);
 
   username = signal<string>('');
   password = signal<string>('');
   errorMessage = signal<string | null>(null);
 
   onLogin() {
-    if (!this.username().trim()) {
-      this.username.set('DemoUser');
-    }
     const success = this.authService.login(this.username(), this.password());
     if (success) {
-      this.router.navigate(['/app/dashboard']);
+      this.router.navigate([this.profileService.hasProfile() ? '/app/dashboard' : '/onboarding']);
     } else {
       this.errorMessage.set('Invalid credentials. Please try again.');
     }

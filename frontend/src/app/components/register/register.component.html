@@ -10,6 +10,7 @@
 
     <h2 class="auth-heading">Create Account</h2>
     <p class="auth-subtext">Join SaansCast to monitor, forecast, and protect your health from air pollution.</p>
+    <p class="auth-subtext">Local demo profile only. Passwords are held in memory for this tab and are not sent to a backend or saved on this device.</p>
 
     <div *ngIf="errorMessage()" class="error-banner">
       {{ errorMessage() }}
@@ -24,7 +25,7 @@
           name="username"
           [ngModel]="username()" 
           (ngModelChange)="username.set($event)"
-          placeholder="e.g. Dr. Ayesha Khan" 
+          placeholder="Enter a display name" 
           required
         />
       </div>
@@ -37,7 +38,7 @@
           name="email"
           [ngModel]="email()" 
           (ngModelChange)="email.set($event)"
-          placeholder="ayesha@example.com" 
+          placeholder="Enter your email address" 
           required
         />
       </div>

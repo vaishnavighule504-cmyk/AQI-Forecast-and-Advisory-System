@@ -34,7 +34,7 @@
         </div>
         <h1 class="hero-title">Know tomorrow's air today.</h1>
         <p class="hero-subtitle">
-          Real-time CPCB telemetry streams, high-precision machine learning predictions, and physician-guided clinical advisories designed to safeguard respiratory health.
+          City AQI readings and available short-term forecasts, with cautious air-quality guidance when the backend provides it.
         </p>
 
         <div class="hero-actions">
@@ -52,38 +52,37 @@
         <div class="aqi-preview-card">
           <div class="card-glass-header">
             <div class="station-meta">
-              <span class="meta-city">Delhi • Active Station Telemetry</span>
-              <span class="meta-date">24h & 48h Outlook</span>
+                <span class="meta-city">Delhi · Pilot city preview</span>
+              <span class="meta-date">Data loads from the backend in the dashboard</span>
             </div>
-            <span class="live-tag">LIVE TELEMETRY</span>
+            <span class="live-tag">API DATA NOT LOADED</span>
           </div>
 
           <div class="aqi-main-metric">
             <div class="metric-block">
-              <span class="metric-value">184</span>
+              <span class="metric-value">—</span>
               <span class="metric-unit">AQI</span>
             </div>
             <div class="metric-badge moderate-bg">
-              Moderate Risk
+              Reading unavailable
             </div>
           </div>
 
           <div class="aqi-preview-grid">
             <div class="forecast-preview-item">
               <span class="item-time">Tomorrow (+1D)</span>
-              <span class="item-value">192 AQI</span>
-              <span class="item-method">Ridge ML</span>
+              <span class="item-value">Forecast unavailable</span>
+              <span class="item-method">No forecast response loaded</span>
             </div>
             <div class="forecast-preview-item">
               <span class="item-time">Day After (+2D)</span>
-              <span class="item-value">178 AQI</span>
-              <span class="item-method">Random Forest</span>
+              <span class="item-value">Forecast unavailable</span>
+              <span class="item-method">No forecast response loaded</span>
             </div>
           </div>
 
           <div class="advisory-preview-strip">
-            <span class="rx-icon">℞</span>
-            <span class="strip-text">Asthma & Vulnerable: Limit prolonged outdoor exertion during peak hours.</span>
+            <span class="strip-text">Available forecast guidance appears here after data is loaded.</span>
           </div>
         </div>
       </div>
@@ -96,18 +95,20 @@
       <div class="section-header">
         <span class="section-eyebrow">INTELLIGENCE PIPELINE</span>
         <h2 class="section-title">The SaansCast Product Engine</h2>
-        <p class="section-subtitle">How raw sensor signals translate into actionable health decisions.</p>
+        <p class="section-subtitle">How returned AQI data and forecasts are presented in the dashboard.</p>
       </div>
 
       <div class="flow-grid">
-        <div *ngFor="let step of productSteps" class="flow-card">
-          <div class="flow-card-top">
-            <span class="step-num">{{ step.step }}</span>
-            <span class="step-action">{{ step.action }}</span>
+        @for (step of productSteps; track step.step) {
+          <div class="flow-card">
+            <div class="flow-card-top">
+              <span class="step-num">{{ step.step }}</span>
+              <span class="step-action">{{ step.action }}</span>
+            </div>
+            <h3 class="flow-card-title">{{ step.title }}</h3>
+            <p class="flow-card-desc">{{ step.desc }}</p>
           </div>
-          <h3 class="flow-card-title">{{ step.title }}</h3>
-          <p class="flow-card-desc">{{ step.desc }}</p>
-        </div>
+        }
       </div>
     </div>
   </section>
@@ -117,15 +118,17 @@
     <div class="section-container">
       <div class="section-header">
         <span class="section-eyebrow">CORE CAPABILITIES</span>
-        <h2 class="section-title">Built for Environmental & Clinical Impact</h2>
+        <h2 class="section-title">Built for Environmental Awareness</h2>
       </div>
 
       <div class="features-grid">
-        <div *ngFor="let feat of features" class="feature-card">
-          <div class="feat-icon">{{ feat.icon }}</div>
-          <h3 class="feat-title">{{ feat.title }}</h3>
-          <p class="feat-desc">{{ feat.description }}</p>
-        </div>
+        @for (feat of features; track feat.title) {
+          <div class="feature-card">
+            <div class="feat-icon">{{ feat.icon }}</div>
+            <h3 class="feat-title">{{ feat.title }}</h3>
+            <p class="feat-desc">{{ feat.description }}</p>
+          </div>
+        }
       </div>
     </div>
   </section>
@@ -134,22 +137,21 @@
   <section id="cities" class="cities-section">
     <div class="section-container">
       <div class="section-header">
-        <span class="section-eyebrow">NATIONAL COVERAGE</span>
+        <span class="section-eyebrow">PILOT CITIES</span>
         <h2 class="section-title">7 Pilot Metropolitan Hubs</h2>
-        <p class="section-subtitle">Real-time monitoring and ML forecasting deployed across India's key urban regions.</p>
+        <p class="section-subtitle">Choose a city in the dashboard to request its current and forecast data.</p>
       </div>
 
       <div class="cities-grid">
-        <div *ngFor="let city of cities" class="city-preview-card" routerLink="/app/dashboard">
-          <div class="city-info">
-            <h4 class="city-name">{{ city.name }}</h4>
-            <span class="city-state">{{ city.state }}</span>
+        @for (city of cities; track city.name) {
+          <div class="city-preview-card" routerLink="/app/dashboard">
+            <div class="city-info">
+              <h4 class="city-name">{{ city.name }}</h4>
+              <span class="city-state">{{ city.state }}</span>
+            </div>
+            <span class="city-aqi-status">AQI loads in dashboard</span>
           </div>
-          <div class="city-aqi-pill" [ngClass]="city.colorClass">
-            <span class="city-aqi-num">{{ city.sampleAqi }}</span>
-            <span class="city-aqi-status">{{ city.status }}</span>
-          </div>
-        </div>
+        }
       </div>
     </div>
   </section>
@@ -160,7 +162,7 @@
       <div class="cta-backdrop"></div>
       <div class="cta-content">
         <h2>Ready to protect your health with air quality foresight?</h2>
-        <p>Access live telemetry, 48-hour forecasts, and physician-formulated health advisories.</p>
+        <p>Access available AQI readings, short-term forecasts, and cautious air-quality guidance.</p>
         <div class="cta-actions">
           <a routerLink="/login" class="cta-btn-primary">Sign In / Register Now</a>
           <a routerLink="/app/dashboard" class="cta-btn-secondary">Explore Live App</a>

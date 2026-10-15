@@ -1,0 +1,39 @@
+<div class="assistant-container">
+  @if (isOpen()) {
+    <section class="assistant-panel assistant-open" aria-label="Air quality assistant">
+      <header class="chat-header">
+        <div class="header-left"><span class="chat-icon" aria-hidden="true">◉</span><div><h4>Air quality assistant</h4><small>Rule-based assistant (no AI model connected)</small></div></div>
+        <button type="button" class="close-chat-btn" aria-label="Close assistant" (click)="toggle()">×</button>
+      </header>
+
+      <div class="chat-body" aria-live="polite">
+        @if (!messages().length) { <p class="empty-state">Ask about today’s air quality, pollutants, or forecast.</p> }
+        @for (msg of messages(); track $index) {
+          <div class="chat-msg" [class.msg-user]="msg.role === 'user'" [class.msg-bot]="msg.role === 'assistant'">
+            <div class="msg-bubble">{{ msg.text }}
+              @if (msg.reply) {
+                <small class="reply-source">Based on: {{ msg.reply.sources.length ? msg.reply.sources.join(' · ') : 'no dashboard data used' }}</small>
+                <small class="reply-status">Data status: {{ msg.reply.dataStatus }}</small>
+              }
+            </div>
+          </div>
+        }
+        @if (isLoading()) { <p class="assistant-state" role="status">Preparing a reply…</p> }
+        @if (errorMessage()) { <div class="assistant-error" role="alert"><span>{{ errorMessage() }}</span><button type="button" (click)="retry()">Retry</button></div> }
+      </div>
+
+      <div class="chat-starter-chips" aria-label="Starter questions">
+        @for (starter of starters; track starter.question) {
+          <button class="chip-btn" type="button" [disabled]="isLoading()" (click)="send(starter.question)">{{ starter.label }}</button>
+        }
+      </div>
+      <div class="chat-input-area">
+        <input type="text" aria-label="Ask about air quality" placeholder="Ask about air quality…"
+          [ngModel]="input()" (ngModelChange)="input.set($event)" (keyup.enter)="send(input())">
+        <button class="send-btn" type="button" [disabled]="isLoading() || !input().trim()" aria-label="Send question" (click)="send(input())">➤</button>
+      </div>
+    </section>
+  }
+  <button class="chatbot-fab" type="button" [class.fab-active]="isOpen()" [attr.aria-expanded]="isOpen()"
+    aria-label="Toggle air quality assistant" (click)="toggle()"><span class="fab-icon">💬</span></button>
+</div>

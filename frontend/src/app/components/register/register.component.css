@@ -146,3 +146,7 @@
 .auth-footer a:hover {
   text-decoration: underline;
 }
+.auth-card { border-radius: var(--ui-radius-large); border: var(--ui-hairline); box-shadow: var(--ui-shadow); }
+.auth-submit-btn { background: var(--ui-accent); }
+.auth-submit-btn:hover { background: var(--ui-accent-strong); }
+.auth-container { padding: clamp(.75rem, 4vw, 1.5rem); }

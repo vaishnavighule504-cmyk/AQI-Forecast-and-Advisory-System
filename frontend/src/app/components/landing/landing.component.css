@@ -746,3 +746,23 @@
     text-align: center;
   }
 }
+
+/* Shared design tokens: keep the existing landing composition and dark palette. */
+.hero-left-panel, .hero-right-panel, .feature-card, .city-card, .flow-card, .landing-card {
+  border-radius: var(--ui-radius-large);
+  box-shadow: var(--ui-shadow);
+}
+.landing-header, .aqi-preview-card { backdrop-filter: none; }
+.aqi-preview-card, .final-cta-card { border-radius: var(--ui-radius-large); box-shadow: var(--ui-shadow); }
+.hero-left-panel, .hero-right-panel, .feature-card, .city-preview-card, .flow-card { backdrop-filter: none; }
+.landing-page, .hero-container, .features-grid, .flow-grid, .cities-grid { min-width: 0; }
+.hero-title, .hero-subtitle, .feature-card p { overflow-wrap: anywhere; }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 420px) {
+  .landing-page { overflow-x: clip; }
+  .hero-container { padding-inline: var(--ui-space-3); }
+  .hero-title { font-size: clamp(2rem, 11vw, 2.5rem); }
+  .hero-actions, .cta-actions { width: 100%; }
+  .hero-actions > *, .cta-actions > * { max-width: 100%; }
+}

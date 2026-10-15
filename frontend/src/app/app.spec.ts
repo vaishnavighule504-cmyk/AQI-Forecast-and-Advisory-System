@@ -8,8 +8,9 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should have the title signal equal to "frontend"', () => {
+  it('should have the title signal equal to "SaansCast"', () => {
     const app = new App();
-    expect(app.title()).toEqual('frontend');
+    const title = (app as unknown as { title: () => string }).title;
+    expect(title()).toEqual('SaansCast');
   });
 });

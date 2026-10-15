@@ -6,11 +6,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Safely check for localStorage so it doesn't crash server-side or during compilation
-  const hasLocalStorageToken = typeof window !== 'undefined' && !!localStorage.getItem('token');
-
-  // Check if user is authenticated via AuthService or localStorage
-  if (authService.isLoggedIn() || hasLocalStorageToken) {
+  if (authService.isLoggedIn()) {
     return true;
   }
 

@@ -8,11 +8,13 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CompareComponent } from './components/compare/compare.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { ModelComponent } from './components/model/model.component';
+import { OnboardingComponent } from './components/onboarding/onboarding.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent, pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'onboarding', component: OnboardingComponent, canActivate: [authGuard] },
   {
     path: 'app',
     component: LayoutComponent,
