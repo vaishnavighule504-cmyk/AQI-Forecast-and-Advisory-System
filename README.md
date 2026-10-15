@@ -1,10 +1,133 @@
-# AQI-Forecast-and-Advisory-System
-
 # SaansCast: AQI Forecast and Advisory System
 
 **Know tomorrow's air today.**
 
+---
+
+## Easy Steps to Run This Project
+
+Follow these 7 steps in order. The full explanation of every step is further down in this file.
+
+**Step 1: Install these 4 programs**
+- Git
+- Python 3.11 or newer
+- Node.js (version 22 recommended)
+- PostgreSQL (remember the password you set during installation)
+
+**Step 2: Download the project**
+```
+git clone https://github.com/vaishnavighule504-cmyk/AQI-Forecast-and-Advisory-System.git
+cd AQI-Forecast-and-Advisory-System
+```
+
+**Step 3: Create the database**
+
+Open the PostgreSQL command line (`psql -U postgres`, or "SQL Shell" on Windows) and type:
+```sql
+ALTER USER postgres WITH PASSWORD 'choose-a-password';
+CREATE DATABASE "aqi_DB";
+\q
+```
+
+**Step 4: Create the settings file**
+
+Copy the file `.env.example` and name the copy `.env`. Open `.env` and write your database password next to `DB_PASSWORD=`. Leave everything else as it is.
+```
+cp .env.example .env          (Linux)
+copy .env.example .env        (Windows)
+```
+
+**Step 5: Start the backend** (keep this window open)
+```
+python -m venv venv
+venv\Scripts\activate            (Windows)   or   source venv/bin/activate   (Linux)
+pip install -r requirements.txt
+cd aqi_backend
+python manage.py migrate
+python manage.py seed_aqi_data
+python manage.py runserver
+```
+
+**Step 6: Start the frontend** (open a second window, and go to the project folder first)
+```
+cd AQI-Forecast-and-Advisory-System
+cd frontend
+npm ci
+npx ng serve
+```
+
+**Step 7: Open the website**
+
+Go to **http://localhost:4200** in your browser.
+
+If the page shows "UNAVAILABLE", the backend in Step 5 is not running. If something fails, see the Troubleshooting section below.
+
+---
+
+## About the project
+
 SaansCast shows live air quality for seven Indian cities (Delhi, Mumbai, Bengaluru, Chennai, Hyderabad, Ahmedabad, Kolkata), forecasts the AQI **one and two days ahead**, and turns the result into guidance for the user's health profile.
+
+---
+
+## Easy steps: run it in 7 steps
+
+Short version. The full explanation of every step is in the [Full guide](#full-guide-every-step-in-detail) further down.
+
+**1. Install these four programs:** Git, Python 3.11 or newer, Node.js 22, PostgreSQL.
+
+**2. Download the project**
+```
+git clone https://github.com/vaishnavighule504-cmyk/AQI-Forecast-and-Advisory-System.git
+cd AQI-Forecast-and-Advisory-System
+```
+
+**3. Create the database and choose a password.** Open `psql` (Windows: "SQL Shell (psql)" from the Start menu. Linux: `sudo -u postgres psql`) and run:
+```
+ALTER USER postgres WITH PASSWORD 'choose-a-password';
+CREATE DATABASE "aqi_DB";
+```
+
+**4. Create the settings file.** Copy `.env.example` to a new file named `.env`, and write your password after `DB_PASSWORD=`.
+
+**5. Start the backend.** In a terminal in the project folder:
+
+Windows (PowerShell):
+```
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+cd aqi_backend
+python manage.py migrate
+python manage.py seed_aqi_data
+python manage.py runserver
+```
+
+Linux:
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cd aqi_backend
+python manage.py migrate
+python manage.py seed_aqi_data
+python manage.py runserver
+```
+
+**6. Start the frontend.** Open a **second** terminal in the project folder:
+```
+cd frontend
+npm ci
+npx ng serve
+```
+
+**7. Open the website:** http://localhost:4200
+
+Backend runs on port 8000, frontend on port 4200. Keep both terminals open. If something fails, see [Troubleshooting](#7-troubleshooting).
+
+---
+
+## About the project
 
 **What it includes**
 
@@ -22,16 +145,6 @@ CPCB data (CSV + live API) -> Django API + PostgreSQL -> forecasting models -> A
 ```
 
 ---
-
-## Setup at a glance
-
-Follow these five steps in order. Each one is explained in full in Section 4.
-
-- [ ] **Step 1:** Clone the repository
-- [ ] **Step 2:** Install PostgreSQL, set a password and create the database `aqi_DB`
-- [ ] **Step 3:** Create the `.env` file with your database password
-- [ ] **Step 4:** Install the backend, run `migrate` and `seed_aqi_data`, start the server on port 8000
-- [ ] **Step 5:** Install the frontend with `npm ci` and start it on port 4200, then open http://localhost:4200
 
 ## Contents
 
