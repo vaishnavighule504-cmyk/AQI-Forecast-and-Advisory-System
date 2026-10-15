@@ -11,20 +11,20 @@ import { ModelComponent } from './components/model/model.component';
 import { OnboardingComponent } from './components/onboarding/onboarding.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent, pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'onboarding', component: OnboardingComponent, canActivate: [authGuard] },
+  { path: '', component: LandingComponent, pathMatch: 'full', title: 'SaansCast | Air Quality Forecasts' },
+  { path: 'login', component: LoginComponent, title: 'Sign in | SaansCast' },
+  { path: 'register', component: RegisterComponent, title: 'Register | SaansCast' },
+  { path: 'onboarding', component: OnboardingComponent, canActivate: [authGuard], title: 'Edit profile | SaansCast' },
   {
     path: 'app',
     component: LayoutComponent,
     canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'compare', component: CompareComponent },
-      { path: 'alerts', component: AlertsComponent },
-      { path: 'model', component: ModelComponent }
+      { path: 'dashboard', component: DashboardComponent, title: 'Dashboard | SaansCast' },
+      { path: 'compare', component: CompareComponent, title: 'Compare cities | SaansCast' },
+      { path: 'alerts', component: AlertsComponent, title: 'Alerts | SaansCast' },
+      { path: 'model', component: ModelComponent, title: 'Forecast method | SaansCast' }
     ]
   },
   { path: '**', redirectTo: '' }

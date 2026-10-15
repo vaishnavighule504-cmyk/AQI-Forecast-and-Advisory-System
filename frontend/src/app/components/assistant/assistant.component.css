@@ -44,3 +44,29 @@
   .assistant-container { right: .75rem; bottom: .75rem; }
   .assistant-panel { width: calc(100vw - 1.5rem); max-height: calc(100dvh - 6rem); }
 }
+
+.header-actions { display: flex; align-items: center; gap: .45rem; }
+.clear-chat-btn { border: 1px solid rgb(255 255 255 / 38%); border-radius: 5px; padding: .3rem .45rem; background: transparent; color: #fff; font: inherit; font-size: .68rem; cursor: pointer; }
+.clear-chat-btn:hover { background: rgb(255 255 255 / 12%); }
+.message-time { display: block; margin-top: .38rem; color: #64748b; font-size: .63rem; text-align: right; }
+.msg-user .message-time { color: #dbeafe; }
+.reply-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+.reply-chips .chip-btn { white-space: normal; font-size: .66rem; }
+.demo-label { color: #9a3412; font-weight: 800; }
+.typing-indicator { align-self: flex-start; display: flex; align-items: center; gap: .25rem; padding: .5rem .65rem; border: 1px solid #dbe6e4; border-radius: 8px; background: #fff; color: #52686d; font-size: .72rem; }
+.typing-indicator span { width: .32rem; height: .32rem; border-radius: 50%; background: #176e68; animation: typing-pulse 1s ease-in-out infinite alternate; }
+.typing-indicator span:nth-child(2) { animation-delay: .15s; }
+.typing-indicator span:nth-child(3) { animation-delay: .3s; margin-right: .15rem; }
+.typing-indicator small { margin-left: .15rem; }
+@keyframes typing-pulse { to { opacity: .28; transform: translateY(-2px); } }
+.character-count { align-self: center; color: #64748b; font-size: .62rem; white-space: nowrap; }
+.clear-chat-btn:focus-visible, .close-chat-btn:focus-visible, .chatbot-fab:focus-visible,
+.chip-btn:focus-visible, .send-btn:focus-visible, .assistant-error button:focus-visible {
+  outline: 3px solid #62c3b6;
+  outline-offset: 2px;
+}
+.shell-wrapper.dark-theme .typing-indicator { border-color: #475569; background: #1e293b; color: #cbd5e1; }
+.shell-wrapper.dark-theme .message-time { color: #a7bbc1; }
+@media (prefers-reduced-motion: reduce) {
+  .typing-indicator span { animation: none; }
+}

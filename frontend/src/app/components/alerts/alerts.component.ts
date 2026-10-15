@@ -37,7 +37,9 @@ import { DataStatusBadgeComponent } from '../data-status-badge/data-status-badge
       <p class="note">Alerts work only while this app is open. Background push is not enabled.</p>
       @if (notificationMessage()) { <p class="inline-message" role="status">{{ notificationMessage() }}</p> }
 
-      @if (isLoading()) { <p class="state-card" role="status">Loading current and forecast data…</p> }
+      @if (isLoading()) { <section class="state-card alert-loading" role="status" aria-label="Loading AQI alerts">
+        <span class="alert-skeleton skeleton-heading"></span><span class="alert-skeleton"></span><span class="alert-skeleton"></span>
+      </section> }
       @if (errorMessage()) { <div class="error-card" role="alert"><span>{{ errorMessage() }}</span><button type="button" class="secondary" (click)="loadData()">Retry</button></div> }
       @if (!isLoading() && !errorMessage() && liveStatus() && !forecastAvailable()) { <p class="note">Forecast data is unavailable. Current-reading threshold alerts can still be evaluated.</p> }
 
@@ -65,6 +67,12 @@ import { DataStatusBadgeComponent } from '../data-status-badge/data-status-badge
   `,
   styles: [`
     .alerts-page{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;color:#1e293b;font-family:'Outfit','Inter',system-ui,sans-serif}.page-header{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1.5rem}.eyebrow{margin:0;color:#047857;font-size:.72rem;font-weight:800;letter-spacing:.09em}h1{margin:.25rem 0;font-size:2rem}.page-header p:not(.eyebrow){color:#64748b}.unread-count{white-space:nowrap;padding:.45rem .7rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-weight:750}.settings-card{display:flex;align-items:end;flex-wrap:wrap;gap:1rem;padding:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:14px}.settings-card label{display:grid;gap:.35rem;color:#334155;font-size:.85rem;font-weight:700}.settings-card select{min-width:145px;padding:.65rem;border:1px solid #cbd5e1;border-radius:8px;background:#fff}.settings-card .toggle{display:flex;align-items:center;gap:.5rem;min-height:40px}.settings-card button,.alert-actions button,.error-card button{border:0;border-radius:8px;padding:.65rem .85rem;background:#047857;color:#fff;font-weight:700;cursor:pointer}.settings-card button.secondary,.alert-actions button.secondary,.error-card button.secondary{background:#e2e8f0;color:#334155}.note{font-size:.84rem;color:#64748b;margin:.7rem 0 1.2rem}.inline-message{color:#166534}.state-card,.error-card,.empty-state{padding:1.2rem;background:#fff;border:1px solid #e2e8f0;border-radius:14px}.error-card{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-color:#fecaca;background:#fef2f2;color:#991b1b}.alert-list{display:grid;gap:.85rem;margin-top:1rem}.alert-card{padding:1rem 1.1rem;background:#fff;border:1px solid #e2e8f0;border-left:4px solid #94a3b8;border-radius:12px}.alert-card.unread{border-left-color:#dc2626}.alert-top{display:flex;align-items:center;justify-content:space-between;gap:.75rem}.alert-top>div{display:flex;align-items:center;gap:.6rem}.severity{padding:.25rem .55rem;border-radius:999px;background:#e2e8f0;color:#334155;font-size:.75rem;font-weight:800}.severity[data-severity="Moderate"]{background:#fef3c7;color:#92400e}.severity[data-severity="Poor"],.severity[data-severity="Very Poor"],.severity[data-severity="Severe"]{background:#fee2e2;color:#991b1b}.alert-city{font-weight:800}.demo-badge{padding:.25rem .55rem;border-radius:999px;background:#fef3c7;color:#92400e;font-size:.72rem;font-weight:850}.alert-card p{margin:.75rem 0;color:#334155}.alert-card small,.read-label{color:#64748b}.alert-actions{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin-top:.8rem}.alert-actions button{padding:.45rem .7rem}.alert-actions button.dismiss{background:#fff;color:#991b1b;border:1px solid #fecaca}.empty-state{text-align:center;padding:3rem 1rem;color:#64748b}.empty-state>span{font-size:2rem}.empty-state h2{color:#0f172a}.shell-wrapper.dark-theme .settings-card,.shell-wrapper.dark-theme .alert-card,.shell-wrapper.dark-theme .state-card,.shell-wrapper.dark-theme .empty-state{background:#1e293b;border-color:#475569;color:#f8fafc}.shell-wrapper.dark-theme .alert-card p,.shell-wrapper.dark-theme .empty-state h2{color:#f8fafc}@media(max-width:650px){.page-header{align-items:flex-start;flex-direction:column}.settings-card{align-items:stretch;flex-direction:column}.settings-card select{width:100%}}
+  `, `
+    .alert-loading { display:grid; gap:.65rem; }
+    .alert-skeleton { display:block; width:min(100%, 34rem); height:1rem; border-radius:var(--ui-radius); background:linear-gradient(90deg,#e9eef0 25%,#f4f6f7 50%,#e9eef0 75%); background-size:200% 100%; animation:alert-shimmer 1.4s ease-in-out infinite; }
+    .alert-skeleton.skeleton-heading { width:min(100%, 18rem); height:1.4rem; }
+    @keyframes alert-shimmer { to { background-position:-200% 0; } }
+    @media(prefers-reduced-motion:reduce) { .alert-skeleton { animation:none; background:#e9eef0; } }
   `]
 })
 export class AlertsComponent implements OnInit, OnDestroy {
@@ -162,7 +170,10 @@ export class AlertsComponent implements OnInit, OnDestroy {
   }
 
   private notify(alerts: UserAlert[]): void {
-    if (!isPlatformBrowser(this.platformId) || Notification.permission !== 'granted') return;
-    for (const alert of alerts) new Notification(`${alert.city} AQI alert · ${alert.severity}`, { body: alert.reason });
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      if (Notification.permission !== 'granted') return;
+      for (const alert of alerts) new Notification(`${alert.city} AQI alert · ${alert.severity}`, { body: alert.reason });
+    } catch { /* Notifications may be disabled by browser or system settings. */ }
   }
 }

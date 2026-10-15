@@ -140,3 +140,69 @@ app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-severe) { backgrou
     transition-duration: .01ms !important;
   }
 }
+
+/* Final component alignment: shared neutral surfaces, accent and compact radii. */
+app-login .auth-container, app-register .auth-container { background: var(--ui-surface-muted); color: var(--ui-text); }
+app-login .auth-card, app-register .auth-card { border-radius: var(--ui-radius-large); border: var(--ui-hairline); box-shadow: var(--ui-shadow); }
+app-login .auth-heading, app-register .auth-heading { color: var(--ui-text); }
+app-login .brand-tagline, app-register .brand-tagline, app-login .auth-footer a, app-register .auth-footer a { color: var(--ui-accent-strong); }
+app-login .form-group input, app-register .form-group input,
+app-login .error-banner, app-register .error-banner,
+app-login .auth-submit-btn, app-register .auth-submit-btn { border-radius: var(--ui-radius); }
+app-login .form-group input:focus, app-register .form-group input:focus { border-color: var(--ui-accent); box-shadow: 0 0 0 3px rgb(15 118 110 / 14%); }
+app-login .auth-submit-btn, app-register .auth-submit-btn { border: 1px solid var(--ui-accent); background: var(--ui-accent); box-shadow: none; }
+app-login .auth-submit-btn:hover, app-register .auth-submit-btn:hover { background: var(--ui-accent-strong); transform: none; }
+
+app-onboarding .card, app-onboarding select, app-onboarding button, app-onboarding fieldset { border-radius: var(--ui-radius); }
+app-onboarding .card { border-color: var(--ui-border); box-shadow: var(--ui-shadow); }
+app-onboarding .eyebrow, app-onboarding .card::before { color: var(--ui-accent-strong); }
+app-onboarding button:not(.secondary) { border-color: var(--ui-accent); background: var(--ui-accent); }
+app-onboarding button:not(.secondary):hover { background: var(--ui-accent-strong); }
+
+app-dashboard .dashboard-hero, app-dashboard .content-card, app-dashboard .pollutant-pill,
+app-dashboard .trend-chart-wrap, app-dashboard .preview-card-item { border-radius: var(--ui-radius-large); }
+app-dashboard .content-card { border: var(--ui-hairline); box-shadow: var(--ui-shadow); }
+app-dashboard .profile-chip { border-radius: var(--ui-radius); border-color: var(--ui-border); }
+app-dashboard .data-retry { border-radius: var(--ui-radius); background: var(--ui-accent); }
+app-dashboard .dashboard-skeleton { border-radius: var(--ui-radius); }
+
+app-compare .load-button, app-compare .retry-button,
+app-alerts .settings-card button, app-alerts .alert-actions button,
+app-alerts .error-card button { border-radius: var(--ui-radius); }
+app-compare .load-button, app-alerts .settings-card button:not(.secondary) { background: var(--ui-accent); }
+app-compare .load-button:hover, app-alerts .settings-card button:not(.secondary):hover { background: var(--ui-accent-strong); }
+app-alerts .settings-card, app-alerts .alert-card, app-alerts .state-card, app-alerts .empty-state, app-alerts .error-card { border-radius: var(--ui-radius-large); border-width: 1px; box-shadow: var(--ui-shadow); }
+app-alerts .settings-card select { border-radius: var(--ui-radius); }
+app-alerts .alerts-page { font-family: inherit; }
+app-alerts .eyebrow { color: var(--ui-accent-strong); }
+
+app-landing .landing-header, app-landing .aqi-preview-card, app-landing .hero-left-panel,
+app-landing .hero-right-panel, app-landing .feature-card, app-landing .city-preview-card,
+app-landing .flow-card { backdrop-filter: none !important; }
+app-landing .aqi-preview-card, app-landing .final-cta-card, app-landing .feature-card,
+app-landing .city-preview-card, app-landing .flow-card { border-radius: var(--ui-radius-large); box-shadow: var(--ui-shadow); }
+app-landing .nav-login-btn, app-landing .nav-app-btn, app-landing .primary-cta,
+app-landing .cta-btn-primary { border-radius: var(--ui-radius); }
+app-landing .nav-app-btn, app-landing .primary-cta, app-landing .cta-btn-primary { background: var(--ui-accent); }
+app-landing .nav-app-btn:hover, app-landing .primary-cta:hover, app-landing .cta-btn-primary:hover { background: var(--ui-accent-strong); }
+app-landing .section-eyebrow, app-landing .step-action, app-landing .brand-tagline { color: #5ee0c3; }
+app-landing .metric-badge { border-radius: var(--ui-radius); background: #e8eef0; color: #334155; }
+app-landing .footer-project-note { color: #cbd5e1; font-size: var(--ui-font-sm); line-height: 1.55; }
+app-landing .footer-project-note p { margin: .2rem 0; }
+
+app-assistant .assistant-panel { border-radius: var(--ui-radius-large) !important; }
+app-model .fact-value, app-model .numeric, app-compare .aqi-value, app-compare .forecast-cell,
+app-compare .rank-cell, app-alerts .alert-card, app-alerts .unread-count,
+app-assistant .message-time, app-assistant .character-count, app-onboarding select { font-variant-numeric: tabular-nums; }
+
+.shell-wrapper.dark-theme app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-good),
+.shell-wrapper.dark-theme app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-satisfactory),
+.shell-wrapper.dark-theme app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-moderate),
+.shell-wrapper.dark-theme app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-poor),
+.shell-wrapper.dark-theme app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-very-poor),
+.shell-wrapper.dark-theme app-dashboard .dashboard-wrapper:has(.category-pill-badge.aqi-severe) { background-color: #0f172a; }
+
+@media (max-width: 767px) {
+  app-landing .footer-project-note { max-width: 34ch; }
+  app-login .auth-card, app-register .auth-card { padding: clamp(1.25rem, 6vw, 2rem); }
+}

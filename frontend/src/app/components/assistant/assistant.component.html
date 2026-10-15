@@ -1,24 +1,39 @@
-<div class="assistant-container">
+<div class="assistant-container" (keydown.escape)="close()">
   @if (isOpen()) {
-    <section class="assistant-panel assistant-open" aria-label="Air quality assistant">
+    <section class="assistant-panel assistant-open" aria-label="Air quality assistant" tabindex="-1">
       <header class="chat-header">
-        <div class="header-left"><span class="chat-icon" aria-hidden="true">◉</span><div><h4>Air quality assistant</h4><small>Rule-based assistant (no AI model connected)</small></div></div>
-        <button type="button" class="close-chat-btn" aria-label="Close assistant" (click)="toggle()">×</button>
+        <div class="header-left">
+          <span class="chat-icon" aria-hidden="true">◉</span>
+          <div><h4>Air quality assistant</h4><small>Rule-based assistant (no AI model connected)</small></div>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="clear-chat-btn" (click)="clearChat()">Clear chat</button>
+          <button type="button" class="close-chat-btn" aria-label="Close assistant" (click)="close()">×</button>
+        </div>
       </header>
 
-      <div class="chat-body" aria-live="polite">
+      <div #messageList class="chat-body" aria-live="polite" aria-relevant="additions text">
         @if (!messages().length) { <p class="empty-state">Ask about today’s air quality, pollutants, or forecast.</p> }
         @for (msg of messages(); track $index) {
           <div class="chat-msg" [class.msg-user]="msg.role === 'user'" [class.msg-bot]="msg.role === 'assistant'">
-            <div class="msg-bubble">{{ msg.text }}
+            <div class="msg-bubble">
+              {{ msg.text }}
               @if (msg.reply) {
-                <small class="reply-source">Based on: {{ msg.reply.sources.length ? msg.reply.sources.join(' · ') : 'no dashboard data used' }}</small>
-                <small class="reply-status">Data status: {{ msg.reply.dataStatus }}</small>
+                <small class="reply-source">{{ msg.reply.sourceLine }}</small>
+                <small class="reply-status">Data status: <span [class.demo-label]="msg.reply.dataStatus === 'demo'">{{ msg.reply.dataStatusLabel }}</span></small>
+                <div class="reply-chips" aria-label="Suggested follow-up questions">
+                  @for (chip of msg.reply.chips; track chip.label) {
+                    <button type="button" class="chip-btn" (click)="activateChip(chip)">{{ chip.label }}</button>
+                  }
+                </div>
               }
+              <time class="message-time" [attr.datetime]="msg.timestamp">{{ msg.timestamp | date:'shortTime' }}</time>
             </div>
           </div>
         }
-        @if (isLoading()) { <p class="assistant-state" role="status">Preparing a reply…</p> }
+        @if (isLoading()) {
+          <div class="typing-indicator" role="status" aria-label="Assistant is typing"><span></span><span></span><span></span><small>Preparing a reply…</small></div>
+        }
         @if (errorMessage()) { <div class="assistant-error" role="alert"><span>{{ errorMessage() }}</span><button type="button" (click)="retry()">Retry</button></div> }
       </div>
 
@@ -28,12 +43,13 @@
         }
       </div>
       <div class="chat-input-area">
-        <input type="text" aria-label="Ask about air quality" placeholder="Ask about air quality…"
-          [ngModel]="input()" (ngModelChange)="input.set($event)" (keyup.enter)="send(input())">
+        <input type="text" aria-label="Ask about air quality" placeholder="Ask about air quality…" maxlength="300"
+          [ngModel]="input()" (ngModelChange)="setInput($event)" (keydown.enter)="send(input())">
+        <span class="character-count" aria-hidden="true">{{ input().length }}/300</span>
         <button class="send-btn" type="button" [disabled]="isLoading() || !input().trim()" aria-label="Send question" (click)="send(input())">➤</button>
       </div>
     </section>
   }
   <button class="chatbot-fab" type="button" [class.fab-active]="isOpen()" [attr.aria-expanded]="isOpen()"
-    aria-label="Toggle air quality assistant" (click)="toggle()"><span class="fab-icon">💬</span></button>
+    aria-label="Toggle air quality assistant" (click)="toggle()"><span class="fab-icon" aria-hidden="true">💬</span></button>
 </div>

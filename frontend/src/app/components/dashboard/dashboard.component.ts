@@ -1,4 +1,4 @@
-import { Component, signal, inject, PLATFORM_ID, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, signal, inject, PLATFORM_ID, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AqiService, ForecastResponse, LiveAqiResponse, StationDetails } from '../../services/aqi.service';
 import { ForecastVM, LiveVM, toForecastVM, toLiveVM, isExplicitDemoMode } from '../../services/aqi-view-models';
@@ -7,7 +7,8 @@ import { ProfileService, UserProfile } from '../../services/profile.service';
 import { Router } from '@angular/router';
 import { AirPlanComponent } from '../air-plan/air-plan.component';
 import { AssistantComponent } from '../assistant/assistant.component';
-import { AssistantContext } from '../../services/chat-provider';
+import { AssistantCitySnapshot, AssistantContext } from '../../services/chat-provider';
+import { CityDataService } from '../../services/city-data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,12 +19,13 @@ import { AssistantContext } from '../../services/chat-provider';
 })
 export class DashboardComponent implements AfterViewInit, OnDestroy {
   private aqiService = inject(AqiService);
+  private cityDataService = inject(CityDataService);
   private platformId = inject(PLATFORM_ID);
   private profileService = inject(ProfileService);
   private router = inject(Router);
 
   // UI Signals
-  selectedCity = signal<string>(this.profileService.load()?.city || 'Delhi');
+  selectedCity = signal<string>(this.cityDataService.selectedCity() || this.profileService.load()?.city || 'Delhi');
   selectedProfile = signal<string>(this.profileService.backendProfile(this.profileService.load()?.sensitivity || 'general'));
   savedProfile = signal<UserProfile | null>(this.profileService.load());
 
@@ -68,6 +70,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
       this.isLoading.set(false);
       return;
     }
+    this.cityDataService.setSelectedCity(this.selectedCity());
     this.demoMode.set(isExplicitDemoMode(window.location.search));
     this.fetchForecast();
     this.initMap();
@@ -133,20 +136,17 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
   }
 
   private focusCityMap(city: string) {
-    if (this.map && this.cityCoords[city]) {
+    if (!isPlatformBrowser(this.platformId) || !this.map || !this.cityCoords[city]) return;
+    try {
       this.map.setView(this.cityCoords[city], 5, { animate: true });
-      
       Object.keys(this.mapMarkers).forEach((name) => {
         const badge = document.getElementById(`marker-${name.toLowerCase()}`);
         if (badge) {
-          if (name === city) {
-            badge.classList.add('selected-city');
-          } else {
-            badge.classList.remove('selected-city');
+          if (name === city) badge.classList.add('selected-city');
+          else badge.classList.remove('selected-city');
           }
-        }
       });
-    }
+    } catch { /* The map may be unavailable during server rendering or teardown. */ }
   }
 
   private updateMapMarkers(): void {
@@ -166,6 +166,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
   onCityChange(city: string) {
     this.selectedCity.set(city);
+    this.cityDataService.setSelectedCity(city);
     this.fetchForecast();
     this.focusCityMap(city);
   }
@@ -191,6 +192,12 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  @HostListener('window:resize')
+  onMapLayoutResize(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.map) return;
+    try { this.map.invalidateSize({ pan: false }); } catch { /* Map may be detached during route teardown. */ }
+  }
+
   fetchForecast() {
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -203,13 +210,19 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     this.updateMapMarkers();
 
     const city = this.selectedCity();
+    this.cityDataService.beginLoad(city, true);
 
     if (this.demoMode()) {
       const demoLive = this.generateMockLiveAqi(city);
-      this.liveVM.set({ ...toLiveVM(demoLive), dataStatus: 'demo' });
+      const demoLiveVM = { ...toLiveVM(demoLive), dataStatus: 'demo' as const };
+      this.liveVM.set(demoLiveVM);
       this.liveStatus.set('demo');
       const demoForecast = this.generateMockForecast(city, this.selectedProfile());
-      this.forecastVM.set(toForecastVM(demoForecast, 'demo'));
+      const demoForecastVM = toForecastVM(demoForecast, 'demo');
+      this.forecastVM.set(demoForecastVM);
+      this.cityDataService.storeLive(city, demoLiveVM);
+      this.cityDataService.storeForecast(city, demoForecastVM);
+      this.cityDataService.finishLoad(city);
       this.forecastStatus.set('demo');
       this.forecastIsDemo.set(true);
       this.isLoading.set(false);
@@ -231,6 +244,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         const viewModel = toLiveVM(liveRes);
         this.liveStatus.set(viewModel.dataStatus);
         this.liveVM.set(viewModel);
+        this.cityDataService.storeLive(city, viewModel);
         if (viewModel.dataStatus === 'unavailable') this.liveErrorMessage.set('No usable current AQI, pollutant, or station data was returned.');
         this.updateMapMarkers();
       },
@@ -238,6 +252,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         console.warn('Failed fetching live telemetry.', err);
         this.liveStatus.set('unavailable');
         this.liveErrorMessage.set('Current AQI data is unavailable. Retry to try again.');
+        this.cityDataService.failLoad(city, 'Current AQI data is unavailable.');
         this.updateMapMarkers();
       }
     });
@@ -248,6 +263,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         const viewModel = toForecastVM(response, 'backend');
         this.forecastVM.set(viewModel);
         this.forecastStatus.set(viewModel.dataStatus);
+        this.cityDataService.storeForecast(city, viewModel);
+        this.cityDataService.finishLoad(city, 'No usable AQI or forecast data was returned.');
         if (viewModel.dataStatus === 'unavailable') this.errorMessage.set('The forecast response contained no usable reading or forecast values.');
         this.isLoading.set(false);
         this.updateMapMarkers();
@@ -257,6 +274,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         this.forecastStatus.set('unavailable');
         this.forecastVM.set(null);
         this.errorMessage.set('Forecast data is unavailable. Retry to try again.');
+        this.cityDataService.failLoad(city, 'Forecast data is unavailable.');
         this.isLoading.set(false);
         this.updateMapMarkers();
       }
@@ -419,7 +437,9 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         advisory: forecast.day1.advisory
       } : null,
       dayAfter: forecast?.day2 ? { value: forecast.day2.value, date: forecast.day2.date } : null,
-      savedProfile: this.savedProfile()
+      savedProfile: this.savedProfile(),
+      otherCities: this.cityDataService.results().filter(result => result.status === 'ready' && (result.live || result.forecast))
+        .map(result => ({ city: result.city, live: result.live, forecast: result.forecast } satisfies AssistantCitySnapshot))
     };
   }
 

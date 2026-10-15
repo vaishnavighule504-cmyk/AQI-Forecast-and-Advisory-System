@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService, Purpose, Sensitivity, UserProfile } from '../../services/profile.service';
@@ -70,6 +70,7 @@ import { ProfileService, Purpose, Sensitivity, UserProfile } from '../../service
 export class OnboardingComponent {
   private profileService = inject(ProfileService);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
   step = signal(1);
   locationMessage = signal('');
   errorMessage = signal('');
@@ -102,6 +103,8 @@ export class OnboardingComponent {
 
   useLocation(): void {
     this.locationMessage.set('');
+    if (!isPlatformBrowser(this.platformId)) { this.locationMessage.set('Location is available in a browser. Choose a city from the list.'); return; }
+    try {
     if (!navigator.geolocation) { this.locationMessage.set('Location is unavailable. Choose a city from the list.'); return; }
     navigator.geolocation.getCurrentPosition(({ coords }) => {
       const distances: Record<string, [number, number]> = {
@@ -111,6 +114,7 @@ export class OnboardingComponent {
       const nearest = Object.entries(distances).sort((a, b) => this.distance(coords.latitude, coords.longitude, a[1]) - this.distance(coords.latitude, coords.longitude, b[1]))[0];
       this.city = nearest[0]; this.locationMessage.set(`Nearest pilot city selected: ${this.city}.`);
     }, () => this.locationMessage.set('Location permission was not granted. Choose a city from the list.'), { enableHighAccuracy: false, timeout: 10000 });
+    } catch { this.locationMessage.set('Location is unavailable. Choose a city from the list.'); }
   }
 
   private distance(lat: number, lon: number, point: [number, number]): number {
