@@ -1,0 +1,2206 @@
+/* Clinical Medical Vibe - Sage Green and Crisp White (NO BLUE COLOR) */
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  color: #334155;
+}
+
+
+.dashboard-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* Header Styling */
+.app-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1.5rem;
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.clinical-icon {
+  font-size: 2.2rem;
+}
+
+.app-header h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 1.05rem;
+  max-width: 650px;
+  margin: 0.5rem auto 0;
+  line-height: 1.5;
+}
+
+/* /* ==========================================================================
+   PHASE 2B: DASHBOARD CONTENT GRID
+   ========================================================================== */
+
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Modern Clean Content Card */
+.content-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.content-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.card-header-clean {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.card-header-clean .icon {
+  font-size: 1.3rem;
+}
+
+.card-header-clean h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* 1. Pollutants Breakdown */
+.pollutant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.0rem;
+}
+
+.pollutant-pill {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.pollutant-pill.dominant-pollutant {
+  background-color: #ecfdf5;
+  border-color: #10b981;
+}
+
+.p-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.p-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.dominant-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #10b981;
+  background-color: #d1fae5;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+.p-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.p-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.p-unit {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.p-progress-bg {
+  height: 4px;
+  background-color: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.p-progress-fill {
+  height: 100%;
+  background-color: #94a3b8;
+  border-radius: 99px;
+}
+
+.dominant-pollutant .p-progress-fill {
+  background-color: #10b981;
+}
+
+/* 2. AQI Trend SVG Chart */
+.trend-chart-wrap {
+  width: 100%;
+  aspect-ratio: 5/2;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.svg-trend-chart {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.grid-line {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+  stroke-dasharray: 2, 2;
+}
+
+.chart-label {
+  font-size: 8px;
+  fill: #64748b;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.chart-label-active {
+  fill: #0f172a;
+  font-weight: 800;
+}
+
+/* 3. Stations List */
+.stations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.station-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.st-name {
+  font-weight: 600;
+  color: #334155;
+}
+
+.st-aqi {
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  color: #0f172a;
+}
+
+/* 4. Health Guidelines (Advisory) */
+.profile-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.profile-tab-btn {
+  background-color: #f1f5f9;
+  border: 1px solid transparent;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-tab-btn:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.profile-tab-btn.active-tab {
+  background-color: #10b981;
+  color: white;
+  border-color: #059669;
+}
+
+.advisory-body {
+  background-color: #ecfdf5;
+  border: 1px dashed #10b981;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.adv-section h4 {
+  margin: 0 0 0.75rem;
+  color: #065f46;
+  font-size: 0.95rem;
+}
+
+.clean-bullet-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clean-bullet-list li {
+  font-size: 0.85rem;
+  color: #047857;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.bullet-dot {
+  margin-top: 5px;
+  min-width: 6px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 50%;
+}
+
+/* 5. City Rankings */
+.section-help-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ranking-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.ranking-item.active-rank {
+  border: 2px solid #10b981;
+  background-color: #f0fdf4;
+}
+
+.rank-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rank-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94a3b8;
+  background-color: #f1f5f9;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.active-rank .rank-num {
+  background-color: #10b981;
+  color: white;
+}
+
+.rank-name {
+  font-weight: 700;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.rank-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rank-trend {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.rank-trend.trend-down {
+  color: #10b981;
+}
+
+/* Down is better for AQI */
+.rank-trend.trend-up {
+  color: #ef4444;
+}
+
+.rank-aqi-pill {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  min-width: 45px;
+  text-align: center;
+}
+
+/* Category Helper Classes */
+.aqi-good {
+  background-color: #d1fae5;
+}
+
+.aqi-satisfactory {
+  background-color: #bef264;
+}
+
+.aqi-moderate {
+  background-color: #fef08a;
+}
+
+.aqi-poor {
+  background-color: #fed7aa;
+}
+
+.aqi-very-poor {
+  background-color: #fecaca;
+}
+
+.aqi-severe {
+  background-color: #fecdd3;
+}
+
+/* Responsive Overrides */
+@media (max-width: 950px) {
+  .dashboard-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .pollutant-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Forecast cards */
+.forecast-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.forecast-result-card {
+  border-radius: 14px;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease;
+}
+
+.forecast-result-card:hover {
+  transform: translateY(-2px);
+}
+
+.date-tag {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.horizon-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  margin: 0.35rem 0 1rem;
+}
+
+.aqi-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.aqi-num {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.aqi-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.cat-pill {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.transparency-tag {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  border-top: 1px solid #f1f5f9;
+  width: 100%;
+  padding-top: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Category-specific card boundary stylings */
+.aqi-good {
+  border-top: 5px solid #10b981;
+}
+
+.aqi-good .aqi-num {
+  color: #10b981;
+}
+
+.aqi-good .cat-pill {
+  background-color: #10b981;
+}
+
+.aqi-satisfactory {
+  border-top: 5px solid #84cc16;
+}
+
+.aqi-satisfactory .aqi-num {
+  color: #84cc16;
+}
+
+.aqi-satisfactory .cat-pill {
+  background-color: #84cc16;
+}
+
+.aqi-moderate {
+  border-top: 5px solid #eab308;
+}
+
+.aqi-moderate .aqi-num {
+  color: #eab308;
+}
+
+.aqi-moderate .cat-pill {
+  background-color: #eab308;
+}
+
+.aqi-poor {
+  border-top: 5px solid #f97316;
+}
+
+.aqi-poor .aqi-num {
+  color: #f97316;
+}
+
+.aqi-poor .cat-pill {
+  background-color: #f97316;
+}
+
+.aqi-very-poor {
+  border-top: 5px solid #ef4444;
+}
+
+.aqi-very-poor .aqi-num {
+  color: #ef4444;
+}
+
+.aqi-very-poor .cat-pill {
+  background-color: #ef4444;
+}
+
+.aqi-severe {
+  border-top: 5px solid #7f1d1d;
+}
+
+.aqi-severe .aqi-num {
+  color: #7f1d1d;
+}
+
+.aqi-severe .cat-pill {
+  background-color: #7f1d1d;
+}
+
+
+/* Prescription Advisory Card */
+.prescription-form-card {
+  background-color: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  position: relative;
+  padding: 1.75rem;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.03);
+}
+
+.prescription-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background-color: #10b981;
+  /* clinical green header line */
+  border-radius: 16px 16px 0 0;
+}
+
+.rx-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.rx-symbol {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #10b981;
+  /* clinical green Rx icon */
+  font-style: italic;
+  font-family: Georgia, serif;
+  line-height: 0.8;
+}
+
+.rx-doctor-info h5 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.15rem 0;
+}
+
+.rx-doctor-info p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rx-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.prescription-section h6 {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.border-top-dashed {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 1.25rem;
+}
+
+.bullet-list-rx {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.bullet-list-rx li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #334155;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.bullet-list-rx li:last-child {
+  margin-bottom: 0;
+}
+
+.bullet-list-rx li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  /* Clinical green star bullet */
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.rx-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.75rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.verify-seal {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #059669;
+  /* Solid green seal token */
+  font-weight: 700;
+}
+
+.rx-date {
+  color: #64748b;
+}
+
+/* Responsive configurations */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-form {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .forecast-cards-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* --- CPCB Live Telemetry & Station Observation Styles --- */
+
+.telemetry-status-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background-color: #ffffff;
+  border-width: 1px;
+  border-style: solid;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+.telemetry-status-badge.status-connected {
+  border-color: #a7f3d0;
+  background-color: #f0fdf4;
+}
+
+.telemetry-status-badge.status-fallback {
+  border-color: #fecaca;
+  background-color: #fff5f5;
+}
+
+.status-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.status-connected .status-indicator-dot {
+  background-color: #10b981;
+}
+
+.status-connected .status-indicator-dot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #10b981;
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.status-fallback .status-indicator-dot {
+  background-color: #ef4444;
+}
+
+.telemetry-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.telemetry-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.telemetry-meta {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.methodology-disclaimer {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.station-drawer-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.station-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.drawer-icon {
+  font-size: 1.2rem;
+}
+
+.station-drawer-header h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.station-drawer-help {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.station-list-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.25rem;
+}
+
+/* Custom scrollbar for station list */
+.station-list-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.station-list-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.station-list-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.station-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.station-name-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.station-aqi-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  text-align: right;
+  min-width: 60px;
+}
+
+/* ==========================================================================
+   PHASE 2A: DASHBOARD HERO STYLES & ATMOSPHERIC BACKDROPS
+   ========================================================================== */
+
+.dashboard-hero {
+  position: relative;
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.5s ease;
+}
+
+/* Atmospheric Backdrop Variants */
+.dashboard-hero.atmo-good {
+  background: linear-gradient(135deg, #064e3b 0%, #0f172a 85%);
+}
+
+.dashboard-hero.atmo-moderate {
+  background: linear-gradient(135deg, #78350f 0%, #0f172a 85%);
+}
+
+.dashboard-hero.atmo-severe {
+  background: linear-gradient(135deg, #7f1d1d 0%, #0f172a 85%);
+}
+
+.atmo-haze-layer {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  animation: atmoHazePulse 16s ease-in-out infinite alternate;
+}
+
+@keyframes atmoHazePulse {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translate(30px, -20px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+.hero-top-bar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.city-location-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.location-pin {
+  font-size: 1.4rem;
+}
+
+.city-location-title h2 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.status-indicator-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 0.25rem 0.65rem;
+  border-radius: 99px;
+  letter-spacing: 0.5px;
+}
+
+.status-indicator-tag.live-active {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.last-updated-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Hero Main Layout */
+.hero-main-layout {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 1.75rem;
+}
+
+.hero-aqi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aqi-hero-number-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.hero-aqi-value {
+  font-size: 5.5rem;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -3px;
+  color: #ffffff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hero-aqi-unit {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 1px;
+}
+
+.category-pill-badge {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0.4rem 1rem;
+  border-radius: 99px;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Forecast Preview Grid */
+.hero-forecast-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.preview-card-item {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.preview-card-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.preview-card-val-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.preview-aqi-num {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.trend-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.trend-badge.worse {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.trend-badge.better {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.preview-card-sub {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* AQI Scale Bar */
+.aqi-scale-container {
+  position: relative;
+  z-index: 5;
+  margin-bottom: 1.5rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.scale-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin-bottom: 0.65rem;
+}
+
+.active-category-name {
+  color: #34d399;
+}
+
+.scale-bar-track {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.4rem;
+}
+
+.scale-band {
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ffffff;
+  opacity: 0.45;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.scale-band.active-band {
+  opacity: 1;
+  transform: scaleY(1.15);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+  border: 2px solid #ffffff;
+}
+
+.band-good {
+  background-color: #10b981;
+}
+
+.band-satisfactory {
+  background-color: #84cc16;
+}
+
+.band-moderate {
+  background-color: #eab308;
+}
+
+.band-poor {
+  background-color: #f97316;
+}
+
+.band-very-poor {
+  background-color: #ef4444;
+}
+
+.band-severe {
+  background-color: #7f1d1d;
+}
+
+.band-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 0.25rem;
+}
+
+/* Compact Weather Strip */
+.compact-weather-strip {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.weather-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.weather-icon {
+  font-size: 1rem;
+}
+
+.weather-label {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.weather-val {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.weather-divider {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+}
+
+/* Hero Responsiveness */
+@media (max-width: 900px) {
+  .hero-main-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .hero-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .scale-bar-track {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .scale-band {
+    height: 32px;
+  }
+
+  .compact-weather-strip {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-start;
+  }
+
+  .weather-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-forecast-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-aqi-value {
+    font-size: 4rem;
+  }
+
+  .scale-bar-track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+
+/* Chatbot styles live with the extracted AssistantComponent. */
+
+/* ==========================================================================
+   PHASE 3: DARK MODE GLOBALS (:host-context)
+   ========================================================================== */
+:host-context(.dark-theme) {
+  --bg-color-main: #0f172a;
+  --bg-color-card: #1e293b;
+  --bg-color-muted: #334155;
+  --border-color: #475569;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+}
+
+:host-context(.dark-theme) .dashboard-wrapper {
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .content-card,
+:host-context(.dark-theme) .advisory-body,
+:host-context(.dark-theme) .ranking-item,
+:host-context(.dark-theme) .pollutant-pill,
+:host-context(.dark-theme) .station-row,
+:host-context(.dark-theme) .profile-tab-btn,
+:host-context(.dark-theme) .trend-chart-wrap {
+  background-color: var(--bg-color-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .card-header-clean h3,
+:host-context(.dark-theme) .p-name,
+:host-context(.dark-theme) .p-val,
+:host-context(.dark-theme) .st-name,
+:host-context(.dark-theme) .st-aqi,
+:host-context(.dark-theme) .rank-name,
+:host-context(.dark-theme) .rank-aqi-pill {
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .p-unit,
+:host-context(.dark-theme) .section-help-text,
+:host-context(.dark-theme) .chart-label {
+  fill: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-theme) .card-header-clean {
+  border-bottom-color: var(--border-color);
+}
+
+/* ==========================================================================
+   PHASE 3: REDUCED MOTION SUPPORT
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.full-width-map {
+  width: 100%;
+  height: 55vh;
+  min-height: 420px;
+  border-radius: 0;
+  border: none;
+  z-index: 1;
+}
+
+.map-hero-section {
+  position: relative;
+  width: 100%;
+  height: 55vh;
+  min-height: 420px;
+}
+
+.hero-panels-overlay {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.hero-left-panel,
+.hero-right-panel {
+  pointer-events: auto;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hero-left-panel {
+  min-width: 180px;
+}
+
+.hl-city {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.hl-aqi {
+  font-family: monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #334155;
+}
+
+.hl-band {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  align-self: flex-start;
+}
+
+.hl-time {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.hl-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.hl-badge.live-active {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.hero-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.forecast-strip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+
+.fs-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.fs-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.custom-map-marker {
+  background: transparent;
+  border: none;
+}
+
+.city-marker-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #0f172a;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.city-marker-badge.selected-city {
+  transform: scale(1.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000 !important;
+}
+
+/* Ensure selected city has higher z-index in Leaflet */
+.leaflet-marker-icon.custom-map-marker:has(.selected-city) {
+  z-index: 1000 !important;
+}
+
+.leaflet-container {
+  outline: 0;
+}
+
+/* Shared design-token pass */
+.dashboard-wrapper {
+  min-width: 0;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.dashboard-content-grid {
+  gap: var(--ui-space-4);
+}
+
+.content-col,
+.content-card,
+.dashboard-hero,
+.forecast-result-card {
+  min-width: 0;
+}
+
+.content-card,
+.forecast-result-card {
+  border: var(--ui-hairline);
+  border-radius: var(--ui-radius-large);
+  box-shadow: var(--ui-shadow);
+}
+
+.hero-panels-overlay {
+  max-width: 100%;
+  padding: clamp(.5rem, 2vw, 1.25rem);
+}
+
+.hero-left-panel,
+.hero-right-panel {
+  max-width: min(100%, 300px);
+  border-radius: var(--ui-radius-large);
+  box-shadow: var(--ui-shadow);
+}
+
+.preview-card-item,
+.compact-weather-strip {
+  backdrop-filter: none;
+}
+
+.hero-aqi-value,
+.preview-aqi-num,
+.p-val,
+.st-aqi,
+.rank-aqi-pill {
+  font-variant-numeric: tabular-nums;
+}
+
+.category-pill-badge,
+.hl-band {
+  box-shadow: none;
+}
+
+.category-pill-badge.aqi-good,
+.hl-band.aqi-good {
+  color: var(--cpcb-good);
+}
+
+.category-pill-badge.aqi-satisfactory,
+.hl-band.aqi-satisfactory {
+  color: var(--cpcb-satisfactory);
+}
+
+.category-pill-badge.aqi-moderate,
+.hl-band.aqi-moderate {
+  color: var(--cpcb-moderate);
+}
+
+.category-pill-badge.aqi-poor,
+.hl-band.aqi-poor {
+  color: var(--cpcb-poor);
+}
+
+.category-pill-badge.aqi-very-poor,
+.hl-band.aqi-very-poor {
+  color: var(--cpcb-very-poor);
+}
+
+.category-pill-badge.aqi-severe,
+.hl-band.aqi-severe {
+  color: var(--cpcb-severe);
+}
+
+.dashboard-hero {
+  box-shadow: var(--ui-shadow);
+}
+
+.dashboard-hero.atmo-good {
+  background-color: #f2faf5;
+}
+
+.dashboard-hero.atmo-moderate {
+  background-color: #fffbeb;
+}
+
+.dashboard-hero.atmo-severe {
+  background-color: #fff7f4;
+}
+
+.dashboard-wrapper,
+.dashboard-hero {
+  transition: none;
+}
+
+@media (max-width: 767px) {
+  .dashboard-content-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-panels-overlay {
+    align-items: flex-start;
+  }
+
+  .hero-left-panel,
+  .hero-right-panel {
+    width: min(46vw, 240px);
+    padding: .75rem;
+  }
+
+  .hero-main-layout,
+  .hero-forecast-preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-wrapper {
+    padding-inline: .75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-panels-overlay {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-left-panel,
+  .hero-right-panel {
+    width: 100%;
+    max-width: none;
+  }
+
+  .full-width-map {
+    height: 44vh;
+    min-height: 300px;
+  }
+
+  .pollutant-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.forecast-line {
+  stroke: #0f766e;
+  stroke-width: 2.5;
+  stroke-dasharray: 6 5;
+}
+
+.observed-point {
+  fill: #fff;
+  stroke: #334155;
+  stroke-width: 2.5;
+}
+
+.forecast-point {
+  fill: #0f766e;
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .65rem 1rem;
+  margin-top: .5rem;
+  font-size: .78rem;
+  color: #334155;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.legend-observed,
+.legend-forecast {
+  display: inline-block;
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+}
+
+.legend-observed {
+  border: 2px solid #334155;
+  background: #fff;
+}
+
+.legend-forecast {
+  background: #0f766e;
+}
+
+.chart-empty {
+  min-height: 7rem;
+  display: grid;
+  place-content: center;
+  gap: .5rem;
+  text-align: center;
+  color: #475569;
+}
+
+.chart-empty button,
+.data-retry,
+.stations-list button,
+.ranking-list button {
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  padding: .45rem .7rem;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.guidance-disclaimer {
+  color: #475569;
+  font-size: .84rem;
+}
+
+.ranking-item {
+  cursor: default;
+}
+
+.ranking-item.active-rank {
+  border-width: 1px;
+}
+
+.rank-right {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.city-marker-badge.aqi-unavailable {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+@media (max-width: 600px) {
+  .trend-chart-wrap {
+    aspect-ratio: auto;
+    min-height: 13rem;
+    padding: .75rem;
+  }
+
+  .svg-trend-chart {
+    height: 9rem;
+  }
+
+  .rank-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+/* Focused visual refresh: keep the existing data layout while clarifying hierarchy. */
+.dashboard-wrapper {
+  max-width: 1320px;
+  padding-block: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.app-header {
+  display: grid;
+  justify-items: center;
+  gap: .35rem;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.app-header h1 {
+  font-size: clamp(1.65rem, 3vw, 2.2rem);
+  letter-spacing: -.04em;
+}
+
+.subtitle {
+  max-width: 58ch;
+  font-size: .96rem;
+}
+
+.profile-chip {
+  margin-top: .6rem;
+  border: var(--ui-hairline);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ui-accent-strong);
+  padding: .55rem .9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-chip:hover {
+  background: #f0fdfa;
+}
+
+.dashboard-hero {
+  isolation: isolate;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 10px;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  box-shadow: 0 12px 28px rgb(15 23 42 / 14%);
+}
+
+.dashboard-hero> :not(.atmo-haze-layer) {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-hero.atmo-good {
+  background: linear-gradient(120deg, #075c4e 0%, #123d3d 45%, #142431 100%);
+}
+
+.dashboard-hero.atmo-moderate {
+  background: linear-gradient(120deg, #76501b 0%, #473a2b 45%, #142431 100%);
+}
+
+.dashboard-hero.atmo-severe {
+  background: linear-gradient(120deg, #843d35 0%, #4b3034 45%, #142431 100%);
+}
+
+.atmo-haze-layer {
+  inset: -18% -3% auto auto;
+  width: 58%;
+  height: 145%;
+  opacity: .55;
+  background:
+    repeating-radial-gradient(ellipse at 72% 48%, transparent 0 24px, rgb(255 255 255 / 7%) 25px 26px, transparent 27px 52px),
+    radial-gradient(ellipse at 68% 46%, rgb(255 255 255 / 13%), transparent 66%);
+  animation: none;
+}
+
+.hero-aqi-value {
+  font-size: clamp(4rem, 8vw, 6rem);
+  letter-spacing: -.065em;
+}
+
+.hero-aqi-card {
+  gap: 1rem;
+}
+
+.hero-forecast-preview {
+  gap: .75rem;
+}
+
+.preview-card-item {
+  background: rgb(5 20 30 / 24%);
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 8px;
+  padding: clamp(.85rem, 2vw, 1.25rem);
+  backdrop-filter: none;
+}
+
+.preview-card-label {
+  color: #e4f3f1;
+  font-size: .76rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.preview-aqi-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-content-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+  gap: clamp(.75rem, 2vw, 1.25rem);
+}
+
+.content-col {
+  gap: clamp(.75rem, 2vw, 1.25rem);
+}
+
+.content-card {
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 7%);
+}
+
+.content-card:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 9%);
+}
+
+.card-header-clean {
+  gap: .7rem;
+  margin-bottom: 1rem;
+  border-bottom-color: #e5e9ef;
+}
+
+.card-header-clean h3 {
+  font-size: 1.03rem;
+  letter-spacing: -.015em;
+}
+
+.pollutant-grid {
+  gap: .7rem;
+}
+
+.pollutant-pill {
+  border-radius: 7px;
+  padding: .9rem;
+  background: linear-gradient(145deg, #fff, #f7fafb);
+  border-color: #e1e8ed;
+}
+
+.pollutant-pill.dominant-pollutant {
+  border-color: #bd8d35;
+  background: #fffbef;
+}
+
+.p-val {
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.035em;
+}
+
+.trend-chart-wrap {
+  background: #fbfcfd;
+  border: 1px solid #e3e9ee;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.svg-trend-chart {
+  width: 100%;
+  height: auto;
+  min-height: 150px;
+  overflow: visible;
+}
+
+.grid-line {
+  stroke: #dfe6eb;
+  stroke-width: 1;
+}
+
+.chart-label {
+  fill: #334155;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.forecast-line {
+  stroke: #087f78;
+  stroke-width: 3;
+  stroke-dasharray: 7 5;
+}
+
+.observed-point {
+  fill: #fff;
+  stroke: #344454;
+  stroke-width: 3;
+}
+
+.forecast-point {
+  fill: #087f78;
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.history-unavailable {
+  display: block;
+  margin-top: .5rem;
+  color: #64748b;
+}
+
+.advisory-card {
+  border-inline-start: 3px solid #168477;
+}
+
+.guidance-disclaimer {
+  max-width: 66ch;
+  line-height: 1.55;
+}
+
+.dashboard-skeleton {
+  display: block;
+  min-height: .9rem;
+  border-radius: var(--ui-radius);
+  background: linear-gradient(90deg, #e9eef0 25%, #f4f6f7 50%, #e9eef0 75%);
+  background-size: 200% 100%;
+  animation: dashboard-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-aqi {
+  width: 5.5rem;
+  height: 2.2rem;
+}
+
+.skeleton-hero-aqi {
+  width: 8rem;
+  height: 4.6rem;
+}
+
+.skeleton-forecast {
+  width: 4.5rem;
+  height: 1.4rem;
+}
+
+.dashboard-skeleton-stack {
+  display: grid;
+  gap: .65rem;
+  width: 100%;
+  padding: .4rem 0;
+}
+
+.dashboard-skeleton-stack .dashboard-skeleton {
+  width: min(100%, 22rem);
+  height: 1.15rem;
+}
+
+.chart-skeleton {
+  min-height: 9rem;
+  align-content: center;
+}
+
+.chart-skeleton .dashboard-skeleton:nth-child(2) {
+  width: 72%;
+}
+
+.chart-skeleton .dashboard-skeleton:nth-child(3) {
+  width: 84%;
+}
+
+@keyframes dashboard-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-content-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-hero {
+    border-radius: 8px;
+  }
+
+  .atmo-haze-layer {
+    width: 72%;
+    opacity: .35;
+  }
+
+  .hero-top-bar {
+    align-items: flex-start;
+    gap: .75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmo-haze-layer {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-skeleton {
+    animation: none !important;
+    background: #e9eef0;
+  }
+}
+
+.city-pill-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: default;
+}
+
+.city-select-inline {
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  font-size: inherit;
+  color: #0f766e;
+  cursor: pointer;
+  outline: none;
+  padding: 0.1rem 0.2rem;
+  border-radius: 4px;
+}
+
+.city-select-inline:hover {
+  background-color: #f0fdfa;
+}
+
+.city-pill-container .divider {
+  color: #94a3b8;
+  margin: 0 0.15rem;
+}
+
+.profile-link-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.profile-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* ========================================================
+   DARK THEME FIXES: Pollutant Cards, Map, & Pill
+   ======================================================== */
+
+:host-context(.dark-theme) .pollutant-pill {
+  background: #1e293b !important;
+  background-image: none !important;
+  border-color: #334155 !important;
+}
+
+:host-context(.dark-theme) .pollutant-pill.dominant-pollutant {
+  background: rgba(16, 185, 129, 0.12) !important;
+  background-image: none !important;
+  border-color: #10b981 !important;
+}
+
+:host-context(.dark-theme) .p-name {
+  color: #94a3b8 !important;
+}
+
+:host-context(.dark-theme) .p-val {
+  color: #f8fafc !important;
+}
+
+:host-context(.dark-theme) .p-unit {
+  color: #64748b !important;
+}
+
+:host-context(.dark-theme) .p-progress-bg {
+  background-color: #334155 !important;
+}
+
+/* Header City Pill Dark Mode */
+:host-context(.dark-theme) .profile-chip,
+:host-context(.dark-theme) .city-pill-container {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #34d399 !important;
+}
+
+:host-context(.dark-theme) .city-select-inline {
+  color: #34d399 !important;
+}
+
+:host-context(.dark-theme) .city-select-inline option {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+/* Turns the Leaflet Map into Dark Mode */
+:host-context(.dark-theme) .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) !important;
+}
+
+/* Dark Mode fix for SaansCast Dashboard Title & Subtitle */
+:host-context(.dark-theme) .app-header h1 {
+  color: #f8fafc !important;
+}
+
+:host-context(.dark-theme) .subtitle {
+  color: #94a3b8 !important;
+}
+
+:host-context(.dark-theme) .app-header {
+  border-bottom-color: #334155 !important;
+}
+
+
+

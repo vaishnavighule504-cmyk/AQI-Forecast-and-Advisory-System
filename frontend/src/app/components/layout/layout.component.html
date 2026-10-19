@@ -1,0 +1,57 @@
+<div class="shell-wrapper" [class.dark-theme]="isDarkMode()">
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <!-- Brand Logo & Name -->
+      <a class="brand-section" routerLink="/app/dashboard" aria-label="SaansCast dashboard">
+        <div class="brand-icon">🍃</div>
+        <div class="brand-text">
+          <span class="brand-name">SaansCast</span>
+          <span class="brand-tagline">Know tomorrow's air today.</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav id="primary-navigation" class="nav-links" [class.mobile-open]="mobileMenuOpen()" aria-label="Primary navigation">
+        <a routerLink="/app/dashboard" routerLinkActive="active-nav" [routerLinkActiveOptions]="{ exact: true }" aria-label="Dashboard" title="Dashboard" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Dashboard</span>
+        </a>
+        <a routerLink="/app/compare" routerLinkActive="active-nav" aria-label="Compare cities" title="Compare cities" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">⚖️</span><span class="nav-label">Compare</span>
+        </a>
+        <a routerLink="/app/alerts" routerLinkActive="active-nav" [attr.aria-label]="'Alerts' + (unreadAlerts > 0 ? ', ' + unreadAlerts + ' unread' : '')" title="Alerts" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">🔔</span><span class="nav-label">Alerts</span> @if (unreadAlerts > 0) { <span class="alert-count">{{ unreadAlerts }}</span> }
+        </a>
+        <a routerLink="/app/model" routerLinkActive="active-nav" aria-label="Forecast model" title="Forecast model" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">📈</span><span class="nav-label">Model</span>
+        </a>
+        <a routerLink="/onboarding" routerLinkActive="active-nav" aria-label="Edit profile" title="Edit profile" (click)="mobileMenuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">⚙️</span><span class="nav-label">Edit profile</span>
+        </a>
+      </nav>
+
+      <!-- Action Bar Tools -->
+      <div class="header-actions">
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" (click)="toggleTheme()" title="Toggle theme" [attr.aria-label]="isDarkMode() ? 'Switch to light theme' : 'Switch to dark theme'">
+          <span class="action-icon" aria-hidden="true">{{ isDarkMode() ? '☀️' : '🌙' }}</span><span class="action-label">{{ isDarkMode() ? 'Light' : 'Dark' }}</span>
+        </button>
+
+        <!-- Logout Button -->
+        <button class="logout-btn" (click)="onLogout()" title="Sign out" aria-label="Sign out">
+          <span class="action-icon" aria-hidden="true">↪</span><span class="action-label">Sign Out</span>
+        </button>
+
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" type="button" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-controls="primary-navigation" aria-label="Toggle navigation menu">
+          <span aria-hidden="true">☰</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Shell Content Area -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

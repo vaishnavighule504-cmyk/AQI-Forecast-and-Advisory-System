@@ -1,0 +1,55 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand-logo">
+        <span class="leaf-icon">🍃</span>
+        <span class="brand-title">SaansCast</span>
+      </div>
+      <p class="brand-tagline">Know tomorrow's air today.</p>
+    </div>
+
+    <h2 class="auth-heading">Sign In</h2>
+    <p class="auth-subtext">Access real-time air quality forecasts and personalized advisories.</p>
+    <p class="auth-subtext">Local demo access only; this is not secure account authentication. Register in this tab to sign in.</p>
+
+    <div *ngIf="errorMessage()" class="error-banner">
+      {{ errorMessage() }}
+    </div>
+
+    <form (ngSubmit)="onLogin()" class="auth-form">
+      <div class="form-group">
+        <label for="username">Username or Email</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username"
+          [ngModel]="username()" 
+          (ngModelChange)="username.set($event)"
+          placeholder="Enter your username or email" 
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          [ngModel]="password()" 
+          (ngModelChange)="password.set($event)"
+          placeholder="••••••••" 
+          required
+        />
+      </div>
+
+      <button type="submit" class="auth-submit-btn">
+        Sign In to Dashboard
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+    </div>
+  </div>
+</div>

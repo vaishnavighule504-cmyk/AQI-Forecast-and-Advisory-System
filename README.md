@@ -439,6 +439,17 @@ CREATE DATABASE "aqi_DB";
 
 Health guidance in the application is rule-based and is **not medical advice**.
 
+### Live CPCB data pipeline
+
+1. Fetch the hourly JSON feed from data.gov.in.
+2. Group readings by station.
+3. Average each pollutant across all stations.
+4. Apply the CPCB piecewise sub-index formulas to those averages to get the city AQI. Station AQIs are never averaged to produce the city AQI.
+
+- Carbon monoxide values from the API are divided by 1000 to convert from micrograms per cubic metre to milligrams per cubic metre before the sub-index is calculated.
+- A reading is valid only if at least 3 pollutants are present, including PM2.5 or PM10.
+- Live readings are stored in a separate `LiveAQIReading` table. Historical data and model inference use the `AQIReading` table, so a live-feed outage cannot affect the models.
+
 ---
 
 ## 10. Security notes
