@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService, Purpose, Sensitivity, UserProfile } from '../../services/profile.service';
+import { CityDataService } from '../../services/city-data.service';
 
 @Component({
   selector: 'app-onboarding', standalone: true, imports: [CommonModule, FormsModule],
@@ -68,6 +69,7 @@ import { ProfileService, Purpose, Sensitivity, UserProfile } from '../../service
   `]
 })
 export class OnboardingComponent {
+  private cityDataService = inject(CityDataService);
   private profileService = inject(ProfileService);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
@@ -105,15 +107,15 @@ export class OnboardingComponent {
     this.locationMessage.set('');
     if (!isPlatformBrowser(this.platformId)) { this.locationMessage.set('Location is available in a browser. Choose a city from the list.'); return; }
     try {
-    if (!navigator.geolocation) { this.locationMessage.set('Location is unavailable. Choose a city from the list.'); return; }
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
-      const distances: Record<string, [number, number]> = {
-        Delhi: [28.6139,77.2090], Mumbai: [19.0760,72.8777], Bengaluru: [12.9716,77.5946], Chennai: [13.0827,80.2707],
-        Hyderabad: [17.3850,78.4867], Ahmedabad: [23.0225,72.5714], Kolkata: [22.5726,88.3639]
-      };
-      const nearest = Object.entries(distances).sort((a, b) => this.distance(coords.latitude, coords.longitude, a[1]) - this.distance(coords.latitude, coords.longitude, b[1]))[0];
-      this.city = nearest[0]; this.locationMessage.set(`Nearest pilot city selected: ${this.city}.`);
-    }, () => this.locationMessage.set('Location permission was not granted. Choose a city from the list.'), { enableHighAccuracy: false, timeout: 10000 });
+      if (!navigator.geolocation) { this.locationMessage.set('Location is unavailable. Choose a city from the list.'); return; }
+      navigator.geolocation.getCurrentPosition(({ coords }) => {
+        const distances: Record<string, [number, number]> = {
+          Delhi: [28.6139, 77.2090], Mumbai: [19.0760, 72.8777], Bengaluru: [12.9716, 77.5946], Chennai: [13.0827, 80.2707],
+          Hyderabad: [17.3850, 78.4867], Ahmedabad: [23.0225, 72.5714], Kolkata: [22.5726, 88.3639]
+        };
+        const nearest = Object.entries(distances).sort((a, b) => this.distance(coords.latitude, coords.longitude, a[1]) - this.distance(coords.latitude, coords.longitude, b[1]))[0];
+        this.city = nearest[0]; this.locationMessage.set(`Nearest pilot city selected: ${this.city}.`);
+      }, () => this.locationMessage.set('Location permission was not granted. Choose a city from the list.'), { enableHighAccuracy: false, timeout: 10000 });
     } catch { this.locationMessage.set('Location is unavailable. Choose a city from the list.'); }
   }
 
@@ -127,6 +129,7 @@ export class OnboardingComponent {
   save(): void {
     const profile: UserProfile = { city: this.city, purpose: this.purpose, sensitivity: this.sensitivity, outdoorTimes: this.outdoorTimes, alertThreshold: this.threshold };
     if (!this.profileService.save(profile)) { this.errorMessage.set('Could not save on this device. Check browser storage settings.'); return; }
+    this.cityDataService.setSelectedCity(this.city); // <-- Keeps CityDataService in sync
     this.router.navigate(['/app/dashboard']);
   }
 }

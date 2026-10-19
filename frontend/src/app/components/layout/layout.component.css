@@ -139,39 +139,6 @@
   gap: 0.75rem;
 }
 
-.city-selector-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background-color: #f1f5f9;
-  padding: 0.35rem 0.75rem;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-}
-
-.shell-wrapper.dark-theme .city-selector-wrapper {
-  background-color: #334155;
-  border-color: #475569;
-}
-
-.city-icon {
-  font-size: 0.9rem;
-}
-
-.city-select {
-  background: transparent;
-  border: none;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #0f172a;
-  cursor: pointer;
-  outline: none;
-}
-
-.shell-wrapper.dark-theme .city-select {
-  color: #f8fafc;
-}
-
 .theme-toggle-btn {
   background: #f1f5f9;
   border: 1px solid #cbd5e1;

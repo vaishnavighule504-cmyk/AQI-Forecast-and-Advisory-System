@@ -22,12 +22,19 @@ export class RegisterComponent {
   password = signal<string>('');
   errorMessage = signal<string | null>(null);
 
-  onRegister() {
-    const success = this.authService.register(this.username(), this.email(), this.password());
-    if (success) {
-      this.router.navigate([this.profileService.hasProfile() ? '/app/dashboard' : '/onboarding']);
-    } else {
-      this.errorMessage.set('Registration failed. Please try again.');
+    onRegister() {
+    if (!this.username() || !this.password()) {
+      this.errorMessage.set('Username and password are required.');
+      return;
     }
+
+    this.authService.register(this.username(), this.email(), this.password()).subscribe({
+      next: () => {
+        this.router.navigate([this.profileService.hasProfile() ? '/app/dashboard' : '/onboarding']);
+      },
+      error: (err) => {
+        this.errorMessage.set(err?.error?.error || 'Registration failed. Please try again.');
+      }
+    });
   }
 }

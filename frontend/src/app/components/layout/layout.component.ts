@@ -26,9 +26,6 @@ export class LayoutComponent {
 
   get unreadAlerts(): number { return this.alertsService.unreadCount(); }
 
-  cities = ['Delhi', 'Mumbai', 'Bengaluru', 'Chennai', 'Hyderabad', 'Ahmedabad', 'Kolkata'];
-  selectedCity = signal<string>('Delhi');
-
   isDarkMode = signal<boolean>(false);
   mobileMenuOpen = signal<boolean>(false);
 
@@ -38,11 +35,6 @@ export class LayoutComponent {
 
   toggleMobileMenu() {
     this.mobileMenuOpen.update(val => !val);
-  }
-
-  onCityChange(event: Event) {
-    const val = (event.target as HTMLSelectElement).value;
-    this.selectedCity.set(val);
   }
 
   onLogout() {

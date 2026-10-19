@@ -25,7 +25,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
   private router = inject(Router);
 
   // UI Signals
-  selectedCity = signal<string>(this.cityDataService.selectedCity() || this.profileService.load()?.city || 'Delhi');
+  selectedCity = signal<string>(this.profileService.load()?.city || this.cityDataService.selectedCity() || 'Delhi');
   selectedProfile = signal<string>(this.profileService.backendProfile(this.profileService.load()?.sensitivity || 'general'));
   savedProfile = signal<UserProfile | null>(this.profileService.load());
 
@@ -164,12 +164,27 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  onCityChange(city: string) {
+    onCityChange(city: string) {
     this.selectedCity.set(city);
     this.cityDataService.setSelectedCity(city);
+
+    // Keep saved user profile in sync
+    const profile = this.profileService.load();
+    if (profile) {
+      profile.city = city;
+      this.profileService.save(profile);
+      this.savedProfile.set(profile);
+    }
+
     this.fetchForecast();
     this.focusCityMap(city);
   }
+
+  onCitySelectChange(event: Event): void {
+    const city = (event.target as HTMLSelectElement).value;
+    this.onCityChange(city);
+  }
+
 
   editProfile(): void { this.router.navigate(['/onboarding']); }
 

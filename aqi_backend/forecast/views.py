@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from rest_framework import status
 from .agent_advisory import AQIAdvisoryAgent
 from .services import get_forecast, predict_raw_features, fetch_live_cpcb_data
 from .models import AQIReading
@@ -108,3 +110,51 @@ def model_predict_view(request):
         
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+@api_view(["POST"])
+def register_view(request):
+    """
+    POST /api/register/
+    Body: {"username": "...", "email": "...", "password": "..."}
+    Saves user to PostgreSQL database (auth_user table).
+    """
+    username = request.data.get("username", "").strip()
+    email = request.data.get("email", "").strip()
+    password = request.data.get("password", "")
+
+    if not username or not password:
+        return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if email and User.objects.filter(email=email).exists():
+        return Response({"error": "Email is already registered."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(username=username, email=email, password=password)
+    return Response({"message": "User registered successfully.", "username": user.username}, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+def login_view(request):
+    """
+    POST /api/login/
+    Body: {"username": "...", "password": "..."}
+    Supports logging in with either username or email.
+    """
+    identifier = request.data.get("username", "").strip()
+    password = request.data.get("password", "")
+
+    if not identifier or not password:
+        return Response({"error": "Username/Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if the entered identifier matches an email or username
+    user_obj = User.objects.filter(email__iexact=identifier).first() or User.objects.filter(username__iexact=identifier).first()
+    resolved_username = user_obj.username if user_obj else identifier
+
+    # Authenticate with the resolved username
+    user = authenticate(username=resolved_username, password=password)
+    if user is not None:
+        return Response({"message": "Login successful.", "username": user.username})
+    return Response({"error": "Invalid username/email or password."}, status=status.HTTP_401_UNAUTHORIZED)
+

@@ -21,12 +21,14 @@ export class LoginComponent {
   password = signal<string>('');
   errorMessage = signal<string | null>(null);
 
-  onLogin() {
-    const success = this.authService.login(this.username(), this.password());
-    if (success) {
-      this.router.navigate([this.profileService.hasProfile() ? '/app/dashboard' : '/onboarding']);
-    } else {
-      this.errorMessage.set('Invalid credentials. Please try again.');
-    }
+    onLogin() {
+    this.authService.login(this.username(), this.password()).subscribe({
+      next: () => {
+        this.router.navigate([this.profileService.hasProfile() ? '/app/dashboard' : '/onboarding']);
+      },
+      error: (err) => {
+        this.errorMessage.set(err?.error?.error || 'Invalid credentials. Please try again.');
+      }
+    });
   }
 }

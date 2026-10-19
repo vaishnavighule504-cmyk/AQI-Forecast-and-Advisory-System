@@ -1,9 +1,15 @@
 import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
+   private readonly registerUrl = 'http://127.0.0.1:8000/api/register/';
+   private readonly loginUrl = 'http://127.0.0.1:8000/api/login/';       // <-- Add this
   private readonly SESSION_KEY = 'saanscast_auth_user';
   private readonly LEGACY_USERS_KEY = 'saanscast_registered_users_v2';
   // Demo-only credentials live for this page session; no password is persisted and no backend auth exists.
@@ -27,41 +33,21 @@ export class AuthService {
     catch { return !!this.currentUser(); }
   }
 
-  login(identifier: string, password?: string): boolean {
-    const query = identifier?.trim().toLowerCase() || '';
-    if (!query || !password || this.sessionCredentials.get(query) !== password) return false;
-    const displayName = this.sessionCredentials.get(`${query}:name`) || query;
-    this.setSession(displayName);
-    return true;
+  login(username: string, password: string): Observable<any> {
+    return this.http.post<any>(this.loginUrl, { username, password }).pipe(
+      tap((res) => {
+        this.setSession(res.username || username);
+      })
+    );
   }
 
-  register(usernameOrPayload: string | any, email?: string, password?: string): boolean {
-    if (!isPlatformBrowser(this.platformId)) return false;
-    let username = '';
-    let userEmail = '';
-    let pass = '';
-    if (typeof usernameOrPayload === 'object' && usernameOrPayload !== null) {
-      username = usernameOrPayload.username || '';
-      userEmail = usernameOrPayload.email || '';
-      pass = usernameOrPayload.password || '';
-    } else {
-      username = usernameOrPayload || '';
-      userEmail = email || '';
-      pass = password || '';
-    }
 
-    const displayName = username.trim();
-    const normalizedUsername = displayName.toLowerCase();
-    const normalizedEmail = userEmail.trim().toLowerCase();
-    if (!normalizedUsername || !pass) return false;
-
-    // This retains the existing local demo navigation without persisting credentials or impersonating backend auth.
-    for (const alias of [normalizedUsername, normalizedEmail].filter(Boolean)) {
-      this.sessionCredentials.set(alias, pass);
-      this.sessionCredentials.set(`${alias}:name`, displayName);
-    }
-    this.setSession(displayName);
-    return true;
+    register(username: string, email: string, password: string): Observable<any> {
+    return this.http.post<any>(this.registerUrl, { username, email, password }).pipe(
+      tap((res) => {
+        this.setSession(res.username || username);
+      })
+    );
   }
 
   logout(): void {

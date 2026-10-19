@@ -56,7 +56,55 @@ interface PlanAction { id: string; text: string; state: ActionState | null; }
     </section>
   `,
   styles: [`
-    :host{display:block}.air-plan{margin:1.25rem 0;padding:clamp(1rem,2.5vw,1.6rem);background:linear-gradient(115deg,#fff 0%,#f6faf9 100%);border:1px solid #d8e5e2;border-inline-start:4px solid #147d75;border-radius:8px;box-shadow:0 5px 16px rgb(18 52 52 / 6%);color:#18323a}.plan-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}.eyebrow{margin:0;color:#0f766e;font-size:.7rem;font-weight:800;letter-spacing:.1em}h2{margin:.2rem 0 .7rem;font-size:clamp(1.35rem,2.5vw,1.65rem);letter-spacing:-.035em}.demo-label{padding:.3rem .6rem;border-radius:999px;background:#fef3c7;color:#92400e;font-size:.72rem;font-weight:850}.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.75rem,2vw,1.25rem)}.plan-section{padding:.8rem 0}h3{margin:.2rem 0 .55rem;font-size:.94rem;letter-spacing:.01em;color:#31535a}.plan-section p,.reason,.outdoor-note{margin:.25rem 0;color:#475b62;line-height:1.55}.guidance-label{font-size:.7rem!important;font-weight:850;color:#8b5a16!important;text-transform:uppercase;letter-spacing:.05em}.action-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem;align-items:center;padding:.7rem 0;border-bottom:1px solid #e1eae8}.action-row.completed>span:first-child{text-decoration:line-through;color:#64748b}.action-row small{grid-column:1/-1;color:#64748b}.controls{display:flex;gap:.35rem}.controls button{padding:.35rem .55rem;border:1px solid #c7d5d5;border-radius:6px;background:#fff;color:#29444a;font-size:.75rem;cursor:pointer}.controls button[aria-pressed=true]{background:#e7f4ef;border-color:#9fc9b9;color:#16634f}.reason{font-weight:650}.why{margin-top:.75rem;border-top:1px solid #dfe8e6;padding-top:.8rem}.why summary{cursor:pointer;font-weight:750;color:#0f625c}.why li{margin:.35rem 0;color:#475b62}@media(max-width:680px){.plan-grid{grid-template-columns:1fr}.air-plan{padding:1rem}}
+    :host{display:block}.air-plan{margin:1.25rem 0;padding:clamp(1rem,2.5vw,1.6rem);background:linear-gradient(115deg,#fff 0%,#f6faf9 100%);border:1px solid #d8e5e2;border-inline-start:4px solid #147d75;border-radius:8px;box-shadow:0 5px 16px rgb(18 52 52 / 6%);color:#18323a}.plan-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}.eyebrow{margin:0;color:#0f766e;font-size:.7rem;font-weight:800;letter-spacing:.1em}h2{margin:.2rem 0 .7rem;font-size:clamp(1.35rem,2.5vw,1.65rem);letter-spacing:-.035em}.demo-label{padding:.3rem .6rem;border-radius:999px;background:#fef3c7;color:#92400e;font-size:.72rem;font-weight:850}.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.75rem,2vw,1.25rem)}.plan-section{padding:.8rem 0}h3{margin:.2rem 0 .55rem;font-size:.94rem;letter-spacing:.01em;color:#31535a}.plan-section p,.reason,.outdoor-note{margin:.25rem 0;color:#475b62;line-height:1.55}.guidance-label{font-size:.7rem!important;font-weight:850;color:#8b5a16!important;text-transform:uppercase;letter-spacing:.05em}.action-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem;align-items:center;padding:.7rem 0;border-bottom:1px solid #e1eae8}.action-row.completed>span:first-child{text-decoration:line-through;color:#64748b}.action-row small{grid-column:1/-1;color:#64748b}.controls{display:flex;gap:.35rem}.controls button{padding:.35rem .55rem;border:1px solid #c7d5d5;border-radius:6px;background:#fff;color:#29444a;font-size:.75rem;cursor:pointer}.controls button[aria-pressed=true]{background:#e7f4ef;border-color:#9fc9b9;color:#16634f}.reason{font-weight:650}.why{margin-top:.75rem;border-top:1px solid #dfe8e6;padding-top:.8rem}.why summary{cursor:pointer;font-weight:750;color:#0f625c}.why li{margin:.35rem 0;color:#475b62}@media(max-width:680px){.plan-grid{grid-template-columns:1fr}.air-plan{padding:1rem}}    :host-context(.dark-theme) .air-plan {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+      border-inline-start-color: #10b981 !important;
+      color: #f8fafc !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+    }
+    :host-context(.dark-theme) .eyebrow {
+      color: #34d399 !important;
+    }
+    :host-context(.dark-theme) h2,
+    :host-context(.dark-theme) h3 {
+      color: #f8fafc !important;
+    }
+    :host-context(.dark-theme) .plan-section p,
+    :host-context(.dark-theme) .reason,
+    :host-context(.dark-theme) .outdoor-note {
+      color: #cbd5e1 !important;
+    }
+    :host-context(.dark-theme) .action-row {
+      border-bottom-color: #334155 !important;
+      color: #e2e8f0 !important;
+    }
+    :host-context(.dark-theme) .controls button {
+      background: #334155 !important;
+      border-color: #475569 !important;
+      color: #e2e8f0 !important;
+    }
+    :host-context(.dark-theme) .controls button[aria-pressed=true] {
+      background: #064e3b !important;
+      border-color: #059669 !important;
+      color: #34d399 !important;
+    }
+    :host-context(.dark-theme) .action-row.completed > span:first-child {
+      color: #64748b !important;
+    }
+    :host-context(.dark-theme) .guidance-label {
+      color: #fbbf24 !important;
+    }
+    :host-context(.dark-theme) .why {
+      border-top-color: #334155 !important;
+    }
+    :host-context(.dark-theme) .why summary { 
+      color: #34d399 !important;
+    }
+    :host-context(.dark-theme) .why li {
+      color: #94a3b8 !important;
+    }
+
   `]
 })
 export class AirPlanComponent implements OnChanges {
@@ -126,9 +174,9 @@ export class AirPlanComponent implements OnChanges {
     const category = this.band || 'unavailable';
     const source = this.dataStatus === 'live' ? 'live data'
       : this.dataStatus === 'stored' ? 'a last stored reading'
-      : this.dataStatus === 'backend' ? 'backend-returned data'
-      : this.dataStatus === 'demo' ? 'demo data'
-      : this.dataStatus === 'loading' ? 'data currently loading' : 'unavailable data';
+        : this.dataStatus === 'backend' ? 'backend-returned data'
+          : this.dataStatus === 'demo' ? 'demo data'
+            : this.dataStatus === 'loading' ? 'data currently loading' : 'unavailable data';
     return this.currentAqi === null
       ? `${this.city || 'This city'}'s AQI and band are unavailable, from ${source}.`
       : `${this.city || 'This city'}'s AQI is ${category} (CPCB scale), from ${source}.`;

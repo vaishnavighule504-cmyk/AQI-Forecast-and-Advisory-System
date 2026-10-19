@@ -32,14 +32,6 @@
 
       <!-- Action Bar Tools -->
       <div class="header-actions">
-        <!-- City Selector -->
-        <div class="city-selector-wrapper" title="Quick City Selector">
-          <span class="city-icon">📍</span>
-          <select [value]="selectedCity()" (change)="onCityChange($event)" class="city-select" aria-label="Select city">
-            <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
-          </select>
-        </div>
-
         <!-- Theme Toggle -->
         <button class="theme-toggle-btn" (click)="toggleTheme()" title="Toggle theme" [attr.aria-label]="isDarkMode() ? 'Switch to light theme' : 'Switch to dark theme'">
           <span class="action-icon" aria-hidden="true">{{ isDarkMode() ? '☀️' : '🌙' }}</span><span class="action-label">{{ isDarkMode() ? 'Light' : 'Dark' }}</span>
